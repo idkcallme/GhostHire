@@ -8,6 +8,7 @@
     "app",
     "backend", 
     "contracts",
+    "circuits",
     "mock-issuer"
   ],
   "scripts": {
@@ -16,7 +17,10 @@
     "dev:all": "concurrently \"npm run dev:backend\" \"npm run dev\"",
     "build": "npm run build --workspace=app",
     "build:backend": "npm run build --workspace=backend",
-    "build:all": "npm run build:backend && npm run build",
+    "build:circuits": "npm run build --workspace=circuits",
+    "build:all": "npm run build:circuits && npm run build:backend && npm run build",
+    "compile-circuits": "npm run compile --workspace=circuits",
+    "setup-circuits": "npm run setup --workspace=circuits",
     "test": "npm run test --workspaces",
     "test:contracts": "npm run test --workspace=contracts",
     "test:app": "npm run test --workspace=app",
