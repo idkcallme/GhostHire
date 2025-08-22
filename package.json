@@ -21,6 +21,12 @@
     "build:all": "npm run build:circuits && npm run build:backend && npm run build",
     "compile-circuits": "npm run compile --workspace=circuits",
     "setup-circuits": "npm run setup --workspace=circuits",
+    "deploy:testnet": "ts-node scripts/deploy-contract.ts testnet",
+    "deploy:mainnet": "ts-node scripts/deploy-contract.ts mainnet",
+    "deploy:local": "ts-node scripts/deploy-contract.ts local",
+    "verify:testnet": "ts-node scripts/verify-contract.ts testnet",
+    "verify:mainnet": "ts-node scripts/verify-contract.ts mainnet",
+    "verify:local": "ts-node scripts/verify-contract.ts local",
     "test": "npm run test --workspaces",
     "test:contracts": "npm run test --workspace=contracts",
     "test:app": "npm run test --workspace=app",
@@ -46,7 +52,13 @@
     "husky": "^8.0.3",
     "lint-staged": "^15.2.0",
     "concurrently": "^8.2.2",
-    "cross-env": "^7.0.3"
+    "cross-env": "^7.0.3",
+    "ts-node": "^10.9.1",
+    "dotenv": "^16.3.1",
+    "@midnight-ntwrk/midnight-js-types": "^0.1.15",
+    "@midnight-ntwrk/ledger": "^0.1.15",
+    "@midnight-ntwrk/wallet-api": "^0.1.15",
+    "@midnight-ntwrk/compact-runtime": "^0.1.15"
   },
   "engines": {
     "node": ">=18.0.0",

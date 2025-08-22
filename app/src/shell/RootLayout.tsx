@@ -1,19 +1,49 @@
 import React, { useState } from "react";
 import { Outlet, NavLink, Link } from "react-router-dom";
 import { ConnectWalletButton } from "../wallet/ConnectWalletButton";
-import { Menu, X } from "lucide-react";
+import { useTheme } from "../components/ThemeProvider";
+import AccessibilitySettings from "../components/AccessibilitySettings";
+import { Menu, X, Settings, Sun, Moon } from "lucide-react";
 
 export function RootLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [accessibilityOpen, setAccessibilityOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <div className="min-h-dvh" style={{backgroundColor: "var(--warm-off-black)", color: "var(--warm-off-white)"}}>
+      {/* Skip to main content link for accessibility */}
+      <a 
+        href="#main-content" 
+        className="skip-link sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-white focus:rounded-md"
+        style={{
+          position: 'absolute',
+          top: '-40px',
+          left: '6px',
+          background: 'var(--primary)',
+          color: 'white',
+          padding: '8px 16px',
+          textDecoration: 'none',
+          borderRadius: '6px',
+          zIndex: 1000,
+          transition: 'top 0.2s ease'
+        }}
+        onFocus={(e) => e.target.style.top = '6px'}
+        onBlur={(e) => e.target.style.top = '-40px'}
+      >
+        Skip to main content
+      </a>
+      
       {/* Sophisticated Header */}
-      <header className="sticky top-0 z-50" style={{
-        background: "rgba(26, 25, 23, 0.9)",
-        backdropFilter: "blur(20px)",
-        borderBottom: "1px solid var(--border)"
-      }}>
+      <header 
+        className="sticky top-0 z-50" 
+        role="banner"
+        style={{
+          background: "rgba(26, 25, 23, 0.9)",
+          backdropFilter: "blur(20px)",
+          borderBottom: "1px solid var(--border)"
+        }}
+      >
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between h-20 px-4 md:px-6">
             {/* Logo with Gradient */}
@@ -108,17 +138,47 @@ export function RootLayout() {
               </a>
             </nav>
 
-            {/* Desktop Connect Wallet + Mobile Menu */}
-            <div className="flex items-center gap-4">
+            {/* Header Actions */}
+            <div className="flex items-center gap-3">
+              {/* Theme Toggle */}
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-lg transition-all duration-300 hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                style={{color: "var(--warm-off-white)"}}
+                aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
+                title="Toggle theme"
+              >
+                {theme === 'dark' ? (
+                  <Sun className="w-5 h-5" aria-hidden="true" />
+                ) : (
+                  <Moon className="w-5 h-5" aria-hidden="true" />
+                )}
+              </button>
+
+              {/* Accessibility Settings */}
+              <button
+                onClick={() => setAccessibilityOpen(true)}
+                className="p-2 rounded-lg transition-all duration-300 hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                style={{color: "var(--warm-off-white)"}}
+                aria-label="Open accessibility settings"
+                title="Accessibility settings"
+              >
+                <Settings className="w-5 h-5" aria-hidden="true" />
+              </button>
+
+              {/* Wallet Connection */}
               <ConnectWalletButton />
               
               {/* Mobile Menu Button */}
               <button
-                className="md:hidden p-2 rounded-lg transition-all duration-300 hover:bg-white/5"
+                className="md:hidden p-2 rounded-lg transition-all duration-300 hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 style={{color: "var(--warm-off-white)"}}
+                aria-expanded={mobileMenuOpen}
+                aria-controls="mobile-menu"
+                aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
               >
-                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                {mobileMenuOpen ? <X className="w-6 h-6" aria-hidden="true" /> : <Menu className="w-6 h-6" aria-hidden="true" />}
               </button>
             </div>
           </div>
@@ -127,7 +187,10 @@ export function RootLayout() {
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
           <div 
+            id="mobile-menu"
             className="md:hidden border-t"
+            role="navigation"
+            aria-label="Mobile navigation"
             style={{
               background: "rgba(26, 25, 23, 0.95)",
               backdropFilter: "blur(20px)",
@@ -174,7 +237,12 @@ export function RootLayout() {
       </header>
 
       {/* Main Content */}
-      <main className="pb-24">
+      <main 
+        id="main-content"
+        className="pb-24"
+        role="main"
+        aria-label="Main content"
+      >
         <Outlet />
       </main>
 
@@ -266,6 +334,20 @@ export function RootLayout() {
           </div>
         </div>
       </footer>
+
+      {/* Accessibility Settings Modal */}
+      <AccessibilitySettings 
+        isOpen={accessibilityOpen}
+        onClose={() => setAccessibilityOpen(false)}
+      />
+
+      {/* Accessibility announcement region */}
+      <div
+        id="accessibility-announcements"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      />
     </div>
   );
 }
