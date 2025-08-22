@@ -166,8 +166,8 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
                 <Settings className="w-5 h-5" aria-hidden="true" />
               </button>
 
-              {/* Wallet Connection */}
-              <ConnectWalletButton />
+                          {/* Wallet Connection */}
+            {/* <ConnectWalletButton /> */}
               
               {/* Mobile Menu Button */}
               <button
