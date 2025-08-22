@@ -14,11 +14,10 @@
     "test": "node test-circuit.js"
   },
   "dependencies": {
-    "circomlib": "^2.0.5",
     "snarkjs": "^0.7.3"
   },
   "devDependencies": {
-    "circom": "^2.1.6"
+    "@types/node": "^20.10.0"
   },
   "keywords": ["zero-knowledge", "circom", "privacy", "eligibility-proof"],
   "author": "GhostHire Team",

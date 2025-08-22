@@ -31,13 +31,6 @@
     "dotenv": "^16.3.1",
     "express-rate-limit": "^7.1.5",
     "express-validator": "^7.0.1",
-    "@midnight-ntwrk/midnight-js-types": "^0.1.15",
-    "@midnight-ntwrk/ledger": "^0.1.15",
-    "@midnight-ntwrk/wallet-api": "^0.1.15",
-    "@midnight-ntwrk/proof-provider": "^0.1.15",
-    "@midnight-ntwrk/compact-runtime": "^0.1.15",
-    "snarkjs": "^0.7.3",
-    "circomlib": "^2.0.5",
     "axios": "^1.6.2"
   },
   "devDependencies": {

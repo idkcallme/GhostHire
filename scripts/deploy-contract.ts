@@ -5,12 +5,25 @@
  * Deploys the JobBoard.compact smart contract to Midnight Network
  */
 
-import { createLedger } from '@midnight-ntwrk/ledger';
-import { WalletAPI } from '@midnight-ntwrk/wallet-api';
-import { CompactRuntime } from '@midnight-ntwrk/compact-runtime';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
+
+// Mock types for Midnight Network (real packages not available yet)
+interface WalletAPI {
+  getAddress(): Promise<string>;
+  getBalance(): Promise<{ amount: number; denom: string }>;
+  signTransaction(tx: any): Promise<any>;
+}
+
+interface LedgerAPI {
+  getStatus(): Promise<{ blockHeight: number; nodeVersion: string }>;
+  submitTransaction(tx: any): Promise<any>;
+}
+
+interface CompactRuntime {
+  createDeployTransaction(params: any): Promise<any>;
+}
 
 // Load environment variables
 dotenv.config();

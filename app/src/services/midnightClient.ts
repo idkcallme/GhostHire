@@ -1,8 +1,27 @@
-import { WalletAPI } from '@midnight-ntwrk/wallet-api';
-import { LedgerAPI } from '@midnight-ntwrk/ledger';
-import { ProofProvider } from '@midnight-ntwrk/proof-provider';
-import { CompactRuntime } from '@midnight-ntwrk/compact-runtime';
 import axios from 'axios';
+
+// Mock types for Midnight Network (real packages not available yet)
+interface WalletAPI {
+  getAddress(): Promise<string>;
+  getBalance(): Promise<{ amount: number; denom: string }>;
+  signTransaction(tx: any): Promise<any>;
+}
+
+interface LedgerAPI {
+  getStatus(): Promise<{ blockHeight: number; nodeVersion: string }>;
+  submitTransaction(tx: any): Promise<any>;
+  getContractState(address: string): Promise<any>;
+}
+
+interface ProofProvider {
+  generateProof(inputs: any): Promise<any>;
+}
+
+interface CompactRuntime {
+  createTransaction(params: any): Promise<any>;
+  createDeployTransaction(params: any): Promise<any>;
+  query(params: any): Promise<any>;
+}
 
 // Midnight Network configuration
 const MIDNIGHT_CONFIG = {

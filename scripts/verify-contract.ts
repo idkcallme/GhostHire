@@ -5,12 +5,19 @@
  * Verifies the deployed contract functionality and integrity
  */
 
-import { createLedger } from '@midnight-ntwrk/ledger';
-import { WalletAPI } from '@midnight-ntwrk/wallet-api';
-import { CompactRuntime } from '@midnight-ntwrk/compact-runtime';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
+
+// Mock types for Midnight Network (real packages not available yet)
+interface LedgerAPI {
+  getStatus(): Promise<{ blockHeight: number; nodeVersion: string }>;
+  getContractState(address: string): Promise<any>;
+}
+
+interface CompactRuntime {
+  query(params: any): Promise<any>;
+}
 
 dotenv.config();
 

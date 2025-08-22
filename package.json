@@ -54,11 +54,7 @@
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
     "ts-node": "^10.9.1",
-    "dotenv": "^16.3.1",
-    "@midnight-ntwrk/midnight-js-types": "^0.1.15",
-    "@midnight-ntwrk/ledger": "^0.1.15",
-    "@midnight-ntwrk/wallet-api": "^0.1.15",
-    "@midnight-ntwrk/compact-runtime": "^0.1.15"
+    "dotenv": "^16.3.1"
   },
   "engines": {
     "node": ">=18.0.0",

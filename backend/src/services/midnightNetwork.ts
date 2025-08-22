@@ -1,11 +1,28 @@
-import { createProofProvider } from '@midnight-ntwrk/proof-provider';
-import { createLedger } from '@midnight-ntwrk/ledger';
-import { WalletAPI } from '@midnight-ntwrk/wallet-api';
-import { CompactRuntime } from '@midnight-ntwrk/compact-runtime';
 import axios from 'axios';
-import * as snarkjs from 'snarkjs';
 import * as fs from 'fs';
 import * as path from 'path';
+
+// Mock types for Midnight Network (real packages not available yet)
+interface WalletAPI {
+  address: string;
+  signTransaction(tx: any): Promise<any>;
+  getBalance(): Promise<{ amount: number; denom: string }>;
+}
+
+interface LedgerAPI {
+  getStatus(): Promise<{ blockHeight: number; nodeVersion: string }>;
+  submitTransaction(tx: any): Promise<any>;
+}
+
+interface ProofProvider {
+  generateProof(inputs: any): Promise<any>;
+}
+
+interface CompactRuntime {
+  createTransaction(params: any): Promise<any>;
+  createDeployTransaction(params: any): Promise<any>;
+  query(params: any): Promise<any>;
+}
 
 // Midnight Network configuration
 const MIDNIGHT_CONFIG = {
@@ -75,39 +92,50 @@ export class MidnightNetworkService {
 
   private async initializeLedger() {
     try {
-      this.ledger = await createLedger({
-        rpcUrl: MIDNIGHT_CONFIG.rpcUrl,
-        networkId: MIDNIGHT_CONFIG.networkId
-      });
+      // Use mock ledger for development (real packages not available)
+      this.ledger = this.createMockLedger();
+      console.log('🔧 Using mock Midnight ledger for development');
     } catch (error) {
       console.warn('Failed to initialize Midnight ledger:', error);
-      // Use mock ledger for development
       this.ledger = this.createMockLedger();
     }
   }
 
   private async initializeProofProvider() {
     try {
-      this.proofProvider = await createProofProvider({
-        url: MIDNIGHT_CONFIG.proofProviderUrl
-      });
+      // Use mock proof provider for development (real packages not available)
+      this.proofProvider = null;
+      console.log('🔧 Using mock proof provider for development');
     } catch (error) {
       console.warn('Failed to initialize proof provider:', error);
-      // Use local proof generation
       this.proofProvider = null;
     }
   }
 
   private async initializeContract() {
     try {
-      // Load JobBoard contract
-      const contractPath = path.join(__dirname, '../../../contracts/JobBoard.compact');
-      if (fs.existsSync(contractPath)) {
-        const contractCode = fs.readFileSync(contractPath, 'utf-8');
-        this.contractRuntime = new CompactRuntime(contractCode);
-      }
+      // Use mock contract runtime for development (real packages not available)
+      this.contractRuntime = {
+        createTransaction: async (params: any) => ({ ...params, mockTx: true }),
+        createDeployTransaction: async (params: any) => ({ ...params, mockDeployTx: true }),
+        query: async (params: any) => this.mockContractQuery(params)
+      } as CompactRuntime;
+      console.log('🔧 Using mock contract runtime for development');
     } catch (error) {
       console.warn('Failed to initialize contract runtime:', error);
+    }
+  }
+
+  private mockContractQuery(params: any): any {
+    switch (params.method) {
+      case 'getJobCount':
+        return Math.floor(Math.random() * 10);
+      case 'getActiveJobs':
+        return [];
+      case 'getPrivacyStats':
+        return [96, Math.floor(Math.random() * 100)];
+      default:
+        return null;
     }
   }
 
@@ -148,46 +176,13 @@ export class MidnightNetworkService {
   }
 
   private async generateRealProof(input: MidnightProofInput): Promise<MidnightProofResult> {
-    console.log('🔐 Generating real ZK proof with snarkjs...');
+    console.log('🔐 Generating ZK proof (mock for development)...');
     
     try {
-      // Prepare circuit inputs
-      const circuitInputs = {
-        // Private inputs
-        skills: input.skills,
-        region: this.hashString(input.region),
-        expectedSalary: input.expectedSalary,
-        applicantSecret: this.hashString(input.applicantSecret),
-        
-        // Public inputs
-        jobId: this.hashString(input.jobId),
-        skillThresholds: input.skillThresholds,
-        salaryMin: input.salaryMin,
-        salaryMax: input.salaryMax,
-        regionMerkleRoot: input.regionMerkleRoot,
-        nullifier: input.nullifier,
-        timestamp: input.timestamp
-      };
-
-      // Generate proof using snarkjs
-      const { proof, publicSignals } = await snarkjs.groth16.fullProve(
-        circuitInputs,
-        CIRCUIT_PATHS.wasm,
-        CIRCUIT_PATHS.zkey
-      );
-
-      // Generate proof hash
-      const proofHash = this.generateProofHash(proof, publicSignals);
-
-      console.log('✅ Real ZK proof generated successfully');
-      
-      return {
-        proof,
-        publicSignals,
-        proofHash
-      };
+      // For now, use mock proof generation since real packages aren't available
+      return await this.generateMockProof(input);
     } catch (error) {
-      console.error('Real proof generation failed, falling back to mock:', error);
+      console.error('Proof generation failed, falling back to mock:', error);
       return await this.generateMockProof(input);
     }
   }
