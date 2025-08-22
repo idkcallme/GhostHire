@@ -1,5 +1,12 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { midnightClient, MidnightWalletInfo } from '../services/midnightClient';
+import midnightClient from '../services/midnightClient';
+
+// Define wallet info interface locally since it's not exported from midnightClient
+interface MidnightWalletInfo {
+  address: string;
+  balance: number;
+  connected: boolean;
+}
 
 interface WalletContextType {
   isConnected: boolean;
@@ -49,13 +56,13 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
       
       setIsConnected(walletInfo.connected);
       setAddress(walletInfo.address);
-      setBalance(walletInfo.balance.amount);
+      setBalance(walletInfo.balance);
       setNetworkStatus(networkStatus);
       
       // Store in localStorage for persistence
       localStorage.setItem('ghosthire-wallet-connected', 'true');
       localStorage.setItem('ghosthire-wallet-address', walletInfo.address);
-      localStorage.setItem('ghosthire-wallet-balance', walletInfo.balance.amount.toString());
+      localStorage.setItem('ghosthire-wallet-balance', walletInfo.balance.toString());
       
       console.log('✅ Connected to Midnight wallet:', walletInfo.address);
     } catch (error) {
