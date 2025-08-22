@@ -13,6 +13,12 @@
     "lint:fix": "eslint . --ext ts,tsx --fix"
   },
   "dependencies": {
+    "@midnight-ntwrk/compact-runtime": "^0.8.1",
+    "@midnight-ntwrk/ledger": "^4.0.0",
+    "@midnight-ntwrk/midnight-js-http-client-proof-provider": "^2.0.2",
+    "@midnight-ntwrk/midnight-js-types": "^2.0.2",
+    "@midnight-ntwrk/wallet": "^5.0.0",
+    "@midnight-ntwrk/wallet-api": "^5.0.0",
     "axios": "^1.6.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",

@@ -17,6 +17,10 @@
     "setup-circuits": "cd ../circuits && npm run setup"
   },
   "dependencies": {
+    "@midnight-ntwrk/compact-runtime": "^0.8.1",
+    "@midnight-ntwrk/ledger": "^4.0.0",
+    "@midnight-ntwrk/midnight-js-http-client-proof-provider": "^2.0.2",
+    "@midnight-ntwrk/midnight-js-types": "^2.0.2",
     "@prisma/client": "^5.7.1",
     "axios": "^1.6.2",
     "bcryptjs": "^2.4.3",
