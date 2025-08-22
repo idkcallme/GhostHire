@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  # Midnight Proof Server
+  proof-server:
+    image: midnightnetwork/proof-server:latest
+    container_name: ghosthire-proof-server
+    ports:
+      - "6300:6300"
+    command: ["midnight-proof-server", "--network", "testnet", "--host", "0.0.0.0", "--port", "6300"]
+    environment:
+      - RUST_LOG=info
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6300/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Mock Issuer Service
+  mock-issuer:
+    build:
+      context: ../mock-issuer
+      dockerfile: Dockerfile
+    container_name: ghosthire-mock-issuer
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+    volumes:
+      - ../mock-issuer:/app
+      - /app/node_modules
+    depends_on:
+      - proof-server
+    restart: unless-stopped
+
+  # Development Database (for demo data)
+  postgres:
+    image: postgres:15-alpine
+    container_name: ghosthire-postgres
+    environment:
+      POSTGRES_DB: ghosthire
+      POSTGRES_USER: ghosthire
+      POSTGRES_PASSWORD: ghosthire_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  # Redis (for caching and sessions)
+  redis:
+    image: redis:7-alpine
+    container_name: ghosthire-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  default:
+    name: ghosthire-network

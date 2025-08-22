@@ -1,0 +1,143 @@
+// GhostHire Job Board Contract
+// Handles job registration and ZK proof verification for applications
+
+contract JobBoard {
+    // Job structure
+    struct Job {
+        u64 id;
+        Hash thresholds;      // Hash of skill thresholds
+        Hash regionRoot;      // Merkle root of allowed regions
+        u32 salaryMin;        // Minimum salary
+        u32 salaryMax;        // Maximum salary
+        Address owner;        // Job poster
+        bool active;          // Job status
+    }
+
+    // Application structure
+    struct Application {
+        u64 jobId;
+        Hash nullifier;       // Anti-replay protection
+        Address applicant;    // Applicant address
+        u64 timestamp;        // Application timestamp
+    }
+
+    // Storage
+    map<u64, Job> jobs;
+    map<Hash, bool> nullifiers;  // Track used nullifiers
+    map<u64, Application[]> applications;  // Job applications
+    
+    // Events
+    event JobCreated(u64 jobId, Address owner, Hash thresholds, Hash regionRoot, u32 salaryMin, u32 salaryMax);
+    event ApplicationSubmitted(u64 jobId, Address applicant, Hash nullifier);
+    event ApplicationAccepted(u64 jobId, Address applicant);
+    event ApplicationRejected(u64 jobId, Address applicant, string reason);
+
+    // State variables
+    u64 nextJobId = 1;
+
+    // Create a new job posting
+    entry createJob(
+        Hash thresholds,
+        Hash regionRoot,
+        u32 salaryMin,
+        u32 salaryMax
+    ) {
+        require(salaryMin <= salaryMax, "Invalid salary range");
+        require(salaryMin > 0, "Salary must be positive");
+        
+        u64 jobId = nextJobId;
+        nextJobId = nextJobId + 1;
+        
+        Job job = Job {
+            id: jobId,
+            thresholds: thresholds,
+            regionRoot: regionRoot,
+            salaryMin: salaryMin,
+            salaryMax: salaryMax,
+            owner: msg.sender,
+            active: true
+        };
+        
+        jobs[jobId] = job;
+        applications[jobId] = [];
+        
+        emit JobCreated(jobId, msg.sender, thresholds, regionRoot, salaryMin, salaryMax);
+    }
+
+    // Apply for a job with ZK proof
+    entry apply(
+        u64 jobId,
+        Hash nullifier,
+        Proof proof
+    ) {
+        // Verify job exists and is active
+        require(jobs[jobId].active, "Job not found or inactive");
+        
+        // Check for nullifier reuse
+        require(!nullifiers[nullifier], "Application already submitted");
+        
+        // Get job details for proof verification
+        Job job = jobs[jobId];
+        
+        // Verify ZK proof
+        bool proofValid = verify_proof(proof, {
+            jobId: jobId,
+            thresholdsHash: job.thresholds,
+            regionRoot: job.regionRoot,
+            salaryMin: job.salaryMin,
+            salaryMax: job.salaryMax,
+            nullifier: nullifier,
+            applicant: msg.sender
+        });
+        
+        require(proofValid, "Invalid proof");
+        
+        // Mark nullifier as used
+        nullifiers[nullifier] = true;
+        
+        // Create application record
+        Application application = Application {
+            jobId: jobId,
+            nullifier: nullifier,
+            applicant: msg.sender,
+            timestamp: block.timestamp
+        };
+        
+        // Add to applications list
+        applications[jobId].push(application);
+        
+        emit ApplicationSubmitted(jobId, msg.sender, nullifier);
+        emit ApplicationAccepted(jobId, msg.sender);
+    }
+
+    // Get job details
+    view getJob(u64 jobId) -> Job {
+        return jobs[jobId];
+    }
+
+    // Get applications for a job
+    view getApplications(u64 jobId) -> Application[] {
+        return applications[jobId];
+    }
+
+    // Check if nullifier has been used
+    view isNullifierUsed(Hash nullifier) -> bool {
+        return nullifiers[nullifier];
+    }
+
+    // Deactivate a job (only owner)
+    entry deactivateJob(u64 jobId) {
+        require(jobs[jobId].owner == msg.sender, "Not job owner");
+        jobs[jobId].active = false;
+    }
+
+    // Get total job count
+    view getJobCount() -> u64 {
+        return nextJobId - 1;
+    }
+
+    // Get application count for a job
+    view getApplicationCount(u64 jobId) -> u64 {
+        return applications[jobId].length;
+    }
+}

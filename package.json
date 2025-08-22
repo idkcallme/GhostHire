@@ -1,0 +1,68 @@
+{
+  "name": "ghosthire",
+  "version": "1.0.0",
+  "description": "A privacy-preserving job board with ZK eligibility proofs built on Midnight Network",
+  "license": "Apache-2.0",
+  "private": true,
+  "workspaces": [
+    "app",
+    "backend", 
+    "contracts",
+    "mock-issuer"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=app",
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev:all": "concurrently \"npm run dev:backend\" \"npm run dev\"",
+    "build": "npm run build --workspace=app",
+    "build:backend": "npm run build --workspace=backend",
+    "build:all": "npm run build:backend && npm run build",
+    "test": "npm run test --workspaces",
+    "test:contracts": "npm run test --workspace=contracts",
+    "test:app": "npm run test --workspace=app",
+    "test:e2e": "npm run test:e2e --workspace=app",
+    "infra:up": "docker-compose -f infra/docker-compose.yml up -d",
+    "infra:down": "docker-compose -f infra/docker-compose.yml down",
+    "deploy": "npm run deploy --workspace=contracts",
+    "seed": "npm run seed --workspace=mock-issuer",
+    "lint": "npm run lint --workspaces",
+    "lint:fix": "npm run lint:fix --workspaces",
+    "typecheck": "npm run typecheck --workspaces",
+    "clean": "npm run clean --workspaces && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0",
+    "prettier": "^3.1.0",
+    "eslint": "^8.55.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/ghosthire.git"
+  },
+  "keywords": [
+    "midnight-network",
+    "zero-knowledge",
+    "privacy",
+    "job-board",
+    "zk-proofs",
+    "blockchain"
+  ],
+  "author": "GhostHire Team",
+  "bugs": {
+    "url": "https://github.com/your-username/ghosthire/issues"
+  },
+  "homepage": "https://github.com/your-username/ghosthire#readme"
+}

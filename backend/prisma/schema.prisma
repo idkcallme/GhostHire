@@ -1,0 +1,182 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String?  @unique
+  passwordHash String?
+  name      String?
+  avatar    String?
+  role      String   @default("APPLICANT") // "APPLICANT" | "EMPLOYER" | "ADMIN"
+  
+  // Profile data (stored as JSON strings for SQLite)
+  skills           String?        // JSON string of skills with proficiency levels
+  location         String?        // General location (not precise)
+  salaryExpectation Int?          // Expected salary
+  experience       Int?           // Years of experience
+  bio              String?
+  
+  // Privacy settings
+  privacyScore     Float        @default(0)
+  zkNullifier      String?      @unique // For anti-Sybil protection
+  
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  lastActiveAt  DateTime @default(now())
+  emailVerifiedAt DateTime?
+  
+  // Relations
+  jobs         Job[]
+  applications Application[]
+  notifications Notification[]
+  
+  @@map("users")
+}
+
+model Job {
+  id          String    @id @default(cuid())
+  title       String
+  description String
+  company     String
+  
+  // Requirements (stored as JSON strings for SQLite)
+  skillRequirements String     // JSON string of required skills with thresholds
+  salaryMin        Int
+  salaryMax        Int
+  allowedRegions   String     // JSON string array of allowed region codes
+  regionMerkleRoot String     // Merkle root for region verification
+  
+  // Metadata
+  tags         String     // JSON string array of tags
+  remote       Boolean  @default(false)
+  experience   String?  // "JUNIOR" | "MID" | "SENIOR"
+  department   String?
+  
+  // Blockchain data
+  contractAddress String?
+  transactionHash String?
+  blockNumber     Int?
+  
+  // Status
+  status      String @default("ACTIVE") // "DRAFT" | "ACTIVE" | "PAUSED" | "CLOSED" | "EXPIRED"
+  deadline    DateTime?
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  publishedAt DateTime?
+  
+  // Relations
+  employer     User          @relation(fields: [employerId], references: [id])
+  employerId   String
+  applications Application[]
+  
+  @@map("jobs")
+}
+
+model Application {
+  id          String @id @default(cuid())
+  
+  // ZK Proof data
+  zkProofHash     String   // Hash of the ZK proof
+  zkPublicInputs  String   // JSON string of public inputs to the proof
+  nullifierHash   String   @unique // Prevents duplicate applications
+  eligibilityProof String  // JSON string of complete proof data
+  
+  // Privacy metrics
+  privacyScore    Float
+  dataRevealed    String   // JSON string of what data was revealed (for analytics)
+  
+  // Status tracking
+  status          String @default("PENDING") // "PENDING" | "REVIEWING" | "APPROVED" | "REJECTED" | "WITHDRAWN"
+  reviewNotes     String?
+  rejectionReason String?
+  
+  // Blockchain data
+  transactionHash String?
+  blockNumber     Int?
+  gasUsed         String?
+  
+  // Timestamps
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  reviewedAt   DateTime?
+  
+  // Relations
+  applicant    User @relation(fields: [applicantId], references: [id])
+  applicantId  String
+  job          Job  @relation(fields: [jobId], references: [id])
+  jobId        String
+  
+  @@map("applications")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String
+  type      String   // "APPLICATION_RECEIVED" | "APPLICATION_STATUS_CHANGE" | "JOB_MATCH" | "SYSTEM_UPDATE" | "PRIVACY_ALERT"
+  read      Boolean  @default(false)
+  data      String?  // JSON string of additional data for the notification
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  readAt    DateTime?
+  
+  // Relations
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  
+  @@map("notifications")
+}
+
+model ZKCircuit {
+  id              String @id @default(cuid())
+  name            String @unique
+  version         String
+  description     String?
+  
+  // Circuit files
+  wasmPath        String
+  zkeyPath        String
+  verificationKey String   // JSON string of verification key
+  
+  // Metadata
+  inputSchema     String   // JSON string schema for circuit inputs
+  outputSchema    String   // JSON string schema for circuit outputs
+  constraints     Int      // Number of constraints
+  
+  // Status
+  active          Boolean @default(true)
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@map("zk_circuits")
+}
+
+model Analytics {
+  id        String   @id @default(cuid())
+  event     String   // Event name (job_posted, application_submitted, etc.)
+  data      String   // JSON string of event data
+  userId    String?  // Optional user association
+  sessionId String?  // Session tracking
+  ipAddress String?  // For analytics (hashed for privacy)
+  userAgent String?
+  
+  createdAt DateTime @default(now())
+  
+  @@map("analytics")
+}
