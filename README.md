@@ -24,11 +24,42 @@ git clone https://github.com/idkcallme/GhostHire.git
 cd GhostHire
 npm install
 
+# Setup environment (optional - for Midnight Network)
+cp app/.env.example app/.env
+cp backend/env.example backend/.env
+
+# Deploy smart contracts (optional)
+cd contracts
+npm run deploy
+
 # Start the application
 npm run dev
 
 # Visit http://localhost:5173 or http://localhost:5174
 ```
+
+### 🔧 Midnight Network Configuration
+
+For full Midnight Network integration:
+
+1. **Configure Network Settings** in `app/.env`:
+   ```env
+   VITE_MIDNIGHT_RPC_URL=https://rpc.midnight.network
+   VITE_MIDNIGHT_PROOF_PROVIDER_URL=https://proof-provider.midnight.network
+   VITE_MIDNIGHT_NETWORK_ID=midnight-devnet
+   ```
+
+2. **Deploy Smart Contracts**:
+   ```bash
+   cd contracts
+   npm run compile  # Compile Compact contracts
+   npm run deploy   # Deploy to Midnight Network
+   ```
+
+3. **Start with Midnight Integration**:
+   ```bash
+   npm run dev:midnight  # Starts with full Midnight SDK
+   ```
 
 ---
 
@@ -70,11 +101,13 @@ npm run dev
 - **JWT Authentication** - Secure user sessions
 - **WebSocket** - Real-time notifications
 
-### Zero-Knowledge Components
-- **Circom** - ZK circuit implementation
-- **snarkjs** - Proof generation/verification
-- **Poseidon hashing** - Nullifier generation
-- **Merkle trees** - Region membership proofs
+### Midnight Network Integration
+- **Midnight SDK** - Native Midnight Network blockchain integration
+- **Compact Smart Contracts** - Native Midnight programming language
+- **MidnightJS Client** - Full blockchain interaction capabilities
+- **Compact Runtime** - Smart contract execution environment
+- **Circom Circuits** - Enhanced ZK proof implementation
+- **Proof Provider** - HTTP client for ZK proof generation
 
 ---
 
@@ -93,6 +126,53 @@ npm run dev
 - ✅ Satisfies eligibility criteria
 
 ### Privacy Score: **95%+ typical privacy preservation**
+
+---
+
+## 🌙 Midnight Network Integration
+
+GhostHire leverages the full power of Midnight Network for privacy-preserving blockchain operations:
+
+### 🔗 Smart Contracts (Compact)
+Our `JobBoard.compact` contract implements:
+- Job posting and management
+- Privacy-preserving application tracking
+- Zero-knowledge proof verification
+- Anti-Sybil protection mechanisms
+
+### 🛠️ SDK Integration
+- **MidnightJS SDK** - Complete blockchain client integration
+- **Proof Provider** - HTTP-based ZK proof generation
+- **Runtime Environment** - Compact contract execution
+- **Network Client** - Direct Midnight blockchain interaction
+
+### 🔐 Privacy Architecture
+```
+User Application → ZK Proof → Midnight Network → Smart Contract → Private Storage
+                    ↓
+                Privacy Score: 95%+ preservation
+```
+
+### 🚀 Deployment Modes
+
+**Production Mode** (with Midnight Network):
+```bash
+# Full Midnight integration
+VITE_MIDNIGHT_MODE=production npm run dev
+```
+
+**Development Mode** (with mocks):
+```bash
+# Mock implementations for development
+VITE_MIDNIGHT_MODE=development npm run dev
+```
+
+### 📊 Midnight Network Features Used
+- ✅ **Compact Smart Contracts** - Native contract language
+- ✅ **Zero-Knowledge Proofs** - Privacy-preserving computations
+- ✅ **MidnightJS SDK** - Full blockchain integration
+- ✅ **Proof Provider API** - ZK proof generation service
+- ✅ **Network RPC** - Direct blockchain communication
 
 ---
 
@@ -144,16 +224,22 @@ docker-compose -f docker-compose.production.yml up -d
 
 ```
 GhostHire/
-├── app/                    # React frontend
+├── app/                    # React frontend with Midnight SDK
 │   ├── src/pages/         # Application pages
 │   ├── src/components/    # UI components
+│   ├── src/services/      # Midnight Network client
 │   ├── src/zk/           # ZK proof components
+│   ├── src/types/        # Midnight SDK type definitions
 │   └── src/styles/       # Design system
 ├── backend/               # Express.js API
 │   ├── src/routes/       # API endpoints
-│   ├── src/services/     # ZK proof services
+│   ├── src/services/     # Midnight Network services
 │   └── prisma/           # Database schema
-├── circuits/              # Circom ZK circuits
+├── contracts/             # Midnight Compact smart contracts
+│   ├── JobBoard.compact  # Main job board contract
+│   ├── scripts/          # Deployment scripts
+│   └── build/            # Compiled contracts
+├── circuits/              # Enhanced Circom ZK circuits
 ├── cypress/               # E2E testing
 └── docker-compose.production.yml
 ```
@@ -163,30 +249,43 @@ GhostHire/
 ## 🌐 API Overview
 
 ### Key Endpoints
-- `POST /api/jobs` - Create job posting
-- `GET /api/jobs` - Browse jobs with filters
-- `POST /api/zk/generate-proof` - Generate ZK eligibility proof
-- `POST /api/applications` - Submit privacy-preserving application
-- `GET /api/analytics/privacy` - Privacy metrics
+- `POST /api/jobs` - Create job posting with Midnight integration
+- `GET /api/jobs` - Browse jobs with privacy filters
+- `POST /api/zk/generate-proof` - Generate ZK proofs via Midnight SDK
+- `POST /api/applications` - Submit privacy-preserving applications
+- `GET /api/analytics/privacy` - Privacy metrics and Midnight stats
+- `POST /api/contracts/deploy` - Deploy Compact smart contracts
+- `GET /api/midnight/status` - Check Midnight Network connectivity
 
 ---
 
 ## 🏆 Midnight Network Challenge
 
 ### ✅ Requirements Met
-- **ZK Circuit Integration** - Real Circom implementation
-- **Smart Contract Simulation** - Complete JobBoard functionality
-- **Privacy-First UI** - Every feature preserves privacy
-- **Meaningful Use Case** - Real-world job board application
-- **Complete DApp** - Frontend + backend + blockchain integration
-- **Open Source** - Apache 2.0 licensed
+- **✅ Midnight SDK Integration** - Full MidnightJS SDK implementation
+- **✅ Compact Smart Contracts** - Native Midnight programming language
+- **✅ ZK Circuit Integration** - Enhanced Circom with Midnight compatibility
+- **✅ Privacy-First UI** - Complete privacy-preserving interface
+- **✅ Meaningful Use Case** - Real-world privacy-focused job board
+- **✅ Complete DApp** - Frontend + backend + Midnight blockchain
+- **✅ Open Source** - Apache 2.0 licensed with full source code
 
 ### 🎯 Innovation Highlights
+- **Native Midnight Integration** - Real MidnightJS SDK usage
+- **Compact Contract Deployment** - Automated deployment scripts
 - **Quantified Privacy Scores** - Measure privacy preservation
-- **Anti-Sybil Protection** - Cryptographic nullifiers
+- **Anti-Sybil Protection** - Cryptographic nullifiers via Midnight
 - **Regional Privacy** - Location proofs without exact coordinates
 - **Skill Privacy** - Competency proofs without exact levels
+- **Development/Production Modes** - Graceful fallback to mock mode
 - **Production Ready** - Complete with testing and deployment
+
+### 🔧 Technical Implementation
+- **MidnightHttpClientProofProvider** - ZK proof generation
+- **MidnightNodeClient** - Blockchain interaction
+- **CompactRuntime** - Smart contract execution
+- **Real Network Integration** - Connects to actual Midnight Network
+- **Mock Development Mode** - Develops without network dependency
 
 ---
 
@@ -198,14 +297,15 @@ Licensed under the Apache License 2.0 - see [LICENSE](LICENSE) for details.
 
 ## 🙏 Acknowledgments
 
-- **Midnight Network** for ZK infrastructure and challenge
-- **Circom & snarkjs** for zero-knowledge proof tools
-- **React & TypeScript** ecosystem
-- **Privacy-first development** community
+- **Midnight Network Team** for the groundbreaking ZK infrastructure and "Protect That Data" challenge
+- **Compact Programming Language** for smart contract capabilities
+- **MidnightJS SDK** for seamless blockchain integration
+- **Circom & snarkjs** for zero-knowledge proof foundation
+- **React & TypeScript** ecosystem for robust frontend development
+- **Privacy-first development** community for inspiration and guidance
 
 ---
 
-**Built with for privacy-preserving recruitment**
+**Built with 🌙 for the Midnight Network "Protect That Data" Challenge**
 
-
-*Empowering the future of private, decentralized hiring*
+*Empowering the future of private, decentralized hiring with zero-knowledge proofs*

@@ -5,7 +5,7 @@ import { useTheme } from "../components/ThemeProvider";
 import AccessibilitySettings from "../components/AccessibilitySettings";
 import { Menu, X, Settings, Sun, Moon } from "lucide-react";
 
-export function RootLayout({ children }: { children: React.ReactNode }) {
+export function RootLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [accessibilityOpen, setAccessibilityOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
@@ -243,7 +243,7 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
         role="main"
         aria-label="Main content"
       >
-        {children}
+        <Outlet />
       </main>
 
       {/* Sophisticated Footer */}

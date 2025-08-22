@@ -25,7 +25,20 @@ const createJobSchema = z.object({
   path: ["salaryMax"]
 });
 
-const updateJobSchema = createJobSchema.partial();
+const updateJobSchema = z.object({
+  title: z.string().min(1, 'Title is required').optional(),
+  description: z.string().min(1, 'Description is required').optional(),
+  company: z.string().min(1, 'Company is required').optional(),
+  skillRequirements: z.record(z.number().min(0).max(100)).optional(),
+  salaryMin: z.number().positive('Minimum salary must be positive').optional(),
+  salaryMax: z.number().positive('Maximum salary must be positive').optional(),
+  allowedRegions: z.array(z.string()).min(1, 'At least one region is required').optional(),
+  tags: z.array(z.string()).optional(),
+  remote: z.boolean().optional(),
+  experience: z.enum(['JUNIOR', 'MID', 'SENIOR']).optional(),
+  department: z.string().optional(),
+  deadline: z.string().datetime().optional(),
+});
 
 const searchJobsSchema = z.object({
   q: z.string().optional(), // Search query
