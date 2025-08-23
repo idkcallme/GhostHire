@@ -2,6 +2,8 @@ pragma circom 2.0.0;
 
 include "./node_modules/circomlib/circuits/comparators.circom";
 include "./node_modules/circomlib/circuits/poseidon.circom";
+include "./node_modules/circomlib/circuits/bitify.circom";
+include "./node_modules/circomlib/circuits/gates.circom";
 
 /**
  * EligibilityProof - ZK circuit for privacy-preserving job application eligibility
@@ -91,15 +93,23 @@ template EligibilityProof(MAX_SKILLS, MAX_REGIONS, MERKLE_TREE_DEPTH) {
     salaryRangeAnd.b <== salaryMaxCheck.out;
     salaryInRange <== salaryRangeAnd.out;
 
-    // 3. Verify region membership using Merkle tree
-    // Simplified for demo - in production, use proper Merkle tree verification
+    // 3. Verify region membership using proper Merkle tree
+    component merkleVerifier = MerkleTreeVerifier(MERKLE_TREE_DEPTH);
     component regionHasher = Poseidon(1);
+    
+    // Hash the region for leaf comparison
     regionHasher.inputs[0] <== region;
     
-    component regionCheck = IsEqual();
-    regionCheck.in[0] <== regionHasher.out;
-    regionCheck.in[1] <== regionMerkleRoot; // Simplified check
-    regionValid <== regionCheck.out;
+    // Set up Merkle proof verification
+    merkleVerifier.leaf <== regionHasher.out;
+    merkleVerifier.root <== regionMerkleRoot;
+    merkleVerifier.pathIndex <== regionMerkleIndex;
+    
+    for (var i = 0; i < MERKLE_TREE_DEPTH; i++) {
+        merkleVerifier.pathElements[i] <== regionMerkleProof[i];
+    }
+    
+    regionValid <== merkleVerifier.isValid;
 
     // 4. Verify nullifier (prevents duplicate applications)
     nullifierHasher.inputs[0] <== applicantSecret;
@@ -186,6 +196,57 @@ template MultiAND(n) {
         firstAnd.b <== restAnd.out;
         out <== firstAnd.out;
     }
+}
+
+// Proper Merkle Tree Verifier
+template MerkleTreeVerifier(levels) {
+    signal input leaf;
+    signal input root;
+    signal input pathElements[levels];
+    signal input pathIndex;
+    signal output isValid;
+
+    component hashers[levels];
+    component selectors[levels];
+
+    signal computedRoot[levels + 1];
+    computedRoot[0] <== leaf;
+
+    for (var i = 0; i < levels; i++) {
+        selectors[i] = Selector();
+        hashers[i] = Poseidon(2);
+
+        // Get bit i of pathIndex
+        component pathBit = Num2Bits(levels);
+        pathBit.in <== pathIndex;
+        
+        selectors[i].in[0] <== computedRoot[i];
+        selectors[i].in[1] <== pathElements[i];
+        selectors[i].sel <== pathBit.out[i];
+
+        hashers[i].inputs[0] <== selectors[i].out[0];
+        hashers[i].inputs[1] <== selectors[i].out[1];
+
+        computedRoot[i + 1] <== hashers[i].out;
+    }
+
+    component rootChecker = IsEqual();
+    rootChecker.in[0] <== computedRoot[levels];
+    rootChecker.in[1] <== root;
+    isValid <== rootChecker.out;
+}
+
+// Selector for Merkle path
+template Selector() {
+    signal input in[2];
+    signal input sel;
+    signal output out[2];
+
+    component isz = IsZero();
+    isz.in <== sel;
+
+    out[0] <== in[0] * isz.out + in[1] * (1 - isz.out);
+    out[1] <== in[1] * isz.out + in[0] * (1 - isz.out);
 }
 
 // Main component instantiation

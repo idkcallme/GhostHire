@@ -28,7 +28,7 @@ const useSimpleState = () => {
   };
 };
 
-// Global styles for consistency
+// Global styles for consistency and accessibility
 const GlobalStyles = () => (
   <style>{`
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -64,6 +64,50 @@ const GlobalStyles = () => (
       cursor: pointer;
     }
     
+    /* Skip link for accessibility */
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 6px;
+      background: #1a1a1a;
+      color: white;
+      padding: 8px;
+      text-decoration: none;
+      border-radius: 4px;
+      z-index: 1000;
+      transition: top 0.2s;
+    }
+    
+    .skip-link:focus {
+      top: 6px;
+    }
+    
+    /* Focus indicators */
+    button:focus, input:focus, textarea:focus, select:focus {
+      outline: 2px solid #1a1a1a;
+      outline-offset: 2px;
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+      body {
+        background: #ffffff;
+        color: #000000;
+      }
+      
+      button, .card {
+        border: 2px solid #000000;
+      }
+    }
+    
+    /* Reduced motion support */
+    @media (prefers-reduced-motion: reduce) {
+      .fade-in, .slide-up, .pulse, * {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+    
     .fade-in { animation: fadeIn 0.6s ease-out; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     
@@ -72,6 +116,19 @@ const GlobalStyles = () => (
     
     .pulse { animation: pulse 2s infinite; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    
+    /* Screen reader only content */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
   `}</style>
 );
 
@@ -114,13 +171,17 @@ const Header = ({ state, setState }) => {
         alignItems: 'center'
       }}>
         {/* Logo */}
-        <Link to="/" style={{
-          textDecoration: 'none',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '1rem'
-        }}>
-          <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+        <Link 
+          to="/" 
+          style={{
+            textDecoration: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem'
+          }}
+          aria-label="GhostHire - Go to homepage"
+        >
+          <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }} aria-hidden="true">
             <div className="pulse" style={{
               width: '12px',
               height: '12px',
@@ -146,7 +207,7 @@ const Header = ({ state, setState }) => {
         </Link>
 
         {/* Navigation */}
-        <nav>
+        <nav role="navigation" aria-label="Main navigation">
           <ul style={{
             display: 'flex',
             listStyle: 'none',
@@ -168,7 +229,17 @@ const Header = ({ state, setState }) => {
                       fontSize: '0.9rem',
                       fontWeight: isActive ? '600' : '400',
                       transition: 'color 0.3s ease',
-                      position: 'relative'
+                      position: 'relative',
+                      padding: '0.5rem',
+                      borderRadius: '4px'
+                    }}
+                    aria-current={isActive ? 'page' : undefined}
+                    onFocus={(e) => {
+                      e.currentTarget.style.outline = '2px solid #1a1a1a';
+                      e.currentTarget.style.outlineOffset = '2px';
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.outline = 'none';
                     }}
                   >
                     {item.label}
@@ -181,7 +252,7 @@ const Header = ({ state, setState }) => {
                         height: '2px',
                         backgroundColor: '#1a1a1a',
                         borderRadius: '1px'
-                      }} />
+                      }} aria-hidden="true" />
                     )}
                   </Link>
                 </li>
@@ -1046,9 +1117,11 @@ const App = () => {
     <Router>
       <GlobalStyles />
       <div style={{ minHeight: '100vh', backgroundColor: '#fafafa' }}>
+        <a href="#main-content" className="skip-link">Skip to main content</a>
+        
         <Header state={appState} setState={setAppState} />
         
-        <main>
+        <main id="main-content" role="main">
           <Routes>
             <Route path="/" element={<HomePage state={appState} setState={setAppState} />} />
             <Route path="/jobs" element={<JobsPage state={appState} setState={setAppState} />} />
