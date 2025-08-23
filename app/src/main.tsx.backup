@@ -1,0 +1,142 @@
+import React from "react";  {
+    path: "/jobs",
+    element: (
+      <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh' }}>
+        <header style={{ backgroundColor: '#5B8CFF', color: 'white', padding: '20px' }}>
+          <h1>🚀 GhostHire</h1>
+          <nav style={{ marginTop: '15px' }}>
+            <Link to="/" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>Home</Link>
+            <Link to="/jobs" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>Jobs</Link>
+            <Link to="/applications" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>Applications</Link>
+            <Link to="/post" style={{ color: 'white', textDecoration: 'none' }}>Post Job</Link>
+          </nav>
+        </header>
+        <main style={{ padding: '20px' }}>
+          <h2>📋 Available Jobs</h2>
+          <div style={{ display: 'grid', gap: '20px', marginTop: '20px' }}>
+            <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: '#f9f9f9' }}>
+              <h3>Senior Rust Developer</h3>
+              <p><strong>Company:</strong> BlockTech Solutions</p>
+              <p><strong>Location:</strong> Remote, US/CA/EU</p>
+              <p><strong>Salary:</strong> $120,000 - $180,000</p>
+              <p><strong>Skills:</strong> Rust, Zero-Knowledge Proofs, Blockchain</p>
+              <button style={{ backgroundColor: '#5B8CFF', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '5px', cursor: 'pointer' }}>
+                Apply with ZK Proof
+              </button>
+            </div>
+            <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: '#f9f9f9' }}>
+              <h3>ZK Protocol Engineer</h3>
+              <p><strong>Company:</strong> Privacy Labs</p>
+              <p><strong>Location:</strong> Remote, Global</p>
+              <p><strong>Salary:</strong> $140,000 - $200,000</p>
+              <p><strong>Skills:</strong> Cryptography, Zero-Knowledge, Mathematics</p>
+              <button style={{ backgroundColor: '#5B8CFF', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '5px', cursor: 'pointer' }}>
+                Apply with ZK Proof
+              </button>
+            </div>
+            <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: '#f9f9f9' }}>
+              <h3>Full Stack TypeScript Developer</h3>
+              <p><strong>Company:</strong> DeFi Innovations</p>
+              <p><strong>Location:</strong> Remote, Americas</p>
+              <p><strong>Salary:</strong> $90,000 - $140,000</p>
+              <p><strong>Skills:</strong> TypeScript, React, Web3</p>
+              <button style={{ backgroundColor: '#5B8CFF', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '5px', cursor: 'pointer' }}>
+                Apply with ZK Proof
+              </button>
+            </div>
+          </div>
+        </main>
+      </div>
+    ),
+  },om "react-dom/client";
+import { createBrowserRouter, RouterProvider, Link } from "react-router-dom";
+import { Landing } from "./pages/Landing-simple";
+
+// Using actual app components but with simple router
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: (
+      <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh' }}>
+        <header style={{ backgroundColor: '#5B8CFF', color: 'white', padding: '20px' }}>
+          <h1>🚀 GhostHire</h1>
+          <nav style={{ marginTop: '15px' }}>
+            <Link to="/" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>Home</Link>
+            <Link to="/jobs" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>Jobs</Link>
+            <Link to="/applications" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>Applications</Link>
+            <Link to="/post" style={{ color: 'white', textDecoration: 'none' }}>Post Job</Link>
+          </nav>
+        </header>
+        <main>
+          <Landing />
+        </main>
+      </div>
+    ),
+  },
+  {
+    path: "/jobs",
+    element: (
+      <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh' }}>
+        <header style={{ backgroundColor: '#5B8CFF', color: 'white', padding: '20px' }}>
+          <h1>� GhostHire</h1>
+          <nav style={{ marginTop: '15px' }}>
+            <Link to="/" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>Home</Link>
+            <Link to="/jobs" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>Jobs</Link>
+            <Link to="/applications" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>Applications</Link>
+            <Link to="/post" style={{ color: 'white', textDecoration: 'none' }}>Post Job</Link>
+          </nav>
+        </header>
+        <main style={{ padding: '20px' }}>
+          <h2>📋 Job Listings</h2>
+          <p>Job listings will appear here...</p>
+        </main>
+      </div>
+    ),
+  },
+  {
+    path: "/applications",
+    element: (
+      <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh' }}>
+        <header style={{ backgroundColor: '#5B8CFF', color: 'white', padding: '20px' }}>
+          <h1>� GhostHire</h1>
+          <nav style={{ marginTop: '15px' }}>
+            <Link to="/" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>Home</Link>
+            <Link to="/jobs" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>Jobs</Link>
+            <Link to="/applications" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>Applications</Link>
+            <Link to="/post" style={{ color: 'white', textDecoration: 'none' }}>Post Job</Link>
+          </nav>
+        </header>
+        <main style={{ padding: '20px' }}>
+          <h2>📄 My Applications</h2>
+          <p>Your job applications will appear here...</p>
+        </main>
+      </div>
+    ),
+  },
+  {
+    path: "/post",
+    element: (
+      <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh' }}>
+        <header style={{ backgroundColor: '#5B8CFF', color: 'white', padding: '20px' }}>
+          <h1>� GhostHire</h1>
+          <nav style={{ marginTop: '15px' }}>
+            <Link to="/" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>Home</Link>
+            <Link to="/jobs" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>Jobs</Link>
+            <Link to="/applications" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>Applications</Link>
+            <Link to="/post" style={{ color: 'white', textDecoration: 'none' }}>Post Job</Link>
+          </nav>
+        </header>
+        <main style={{ padding: '20px' }}>
+          <h2>📝 Post a Job</h2>
+          <p>Job posting form will appear here...</p>
+        </main>
+      </div>
+    ),
+  },
+]);
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <RouterProvider router={router} />
+  </React.StrictMode>
+);

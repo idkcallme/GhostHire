@@ -14,7 +14,9 @@ const registerSchema = z.object({
   username: z.string().min(3, 'Username must be at least 3 characters').optional(),
   password: z.string().min(8, 'Password must be at least 8 characters'),
   name: z.string().min(1, 'Name is required').optional(),
-  role: z.enum(['APPLICANT', 'EMPLOYER']).default('APPLICANT')
+  role: z.enum(['job_seeker', 'employer']).default('job_seeker').transform(role => 
+    role === 'job_seeker' ? 'APPLICANT' : 'EMPLOYER'
+  )
 });
 
 const loginSchema = z.object({

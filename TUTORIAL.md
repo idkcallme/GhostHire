@@ -1,924 +1,662 @@
-# 🔐 GhostHire: Complete Tutorial & Integration Guide
+# 🔐 GhostHire Complete Tutorial & Setup Guide
 
-**Building Privacy-Preserving Job Applications with Midnight Network**
+**Privacy-Preserving Job Board with Real Midnight Network Integration**
 
 ---
 
 ## 📖 Table of Contents
 
-1. [Overview](#overview)
-2. [Architecture Deep Dive](#architecture-deep-dive)
-3. [Midnight Network Integration](#midnight-network-integration)
-4. [Zero-Knowledge Proof Implementation](#zero-knowledge-proof-implementation)
-5. [Smart Contract Development](#smart-contract-development)
-6. [Frontend Integration](#frontend-integration)
-7. [Backend API Development](#backend-api-development)
-8. [Deployment Guide](#deployment-guide)
-9. [Testing & Verification](#testing--verification)
-10. [Customization Guide](#customization-guide)
+- [🌟 Overview](#-overview)
+- [🚀 Quick Start](#-quick-start)
+- [⚙️ Detailed Setup](#%EF%B8%8F-detailed-setup)
+- [🌙 Midnight Network Integration](#-midnight-network-integration)
+- [💼 User Guide](#-user-guide)
+- [🔒 Privacy Features](#-privacy-features)
+- [🛠️ Developer Guide](#%EF%B8%8F-developer-guide)
+- [🧪 Testing & Validation](#-testing--validation)
+- [🚢 Deployment](#-deployment)
+- [🔧 Troubleshooting](#-troubleshooting)
 
 ---
 
 ## 🌟 Overview
 
-GhostHire demonstrates how to build a complete privacy-preserving job board using Midnight Network's zero-knowledge technology. This tutorial covers every aspect from ZK circuit design to production deployment.
+### What is GhostHire?
 
-### What You'll Learn
+GhostHire is a revolutionary job board that solves the **privacy paradox** in hiring:
+- **Job seekers** need to prove their qualifications
+- **Employers** need verified candidate information  
+- **Both parties** want to protect sensitive data
 
-- **Zero-Knowledge Proofs**: How to design and implement ZK circuits for eligibility verification
-- **Midnight Network Integration**: Complete blockchain integration with wallet connectivity
-- **Smart Contract Development**: Building privacy-preserving contracts with Compact language
-- **Privacy-First UI/UX**: Designing accessible interfaces that highlight privacy features
-- **Production Deployment**: Real-world deployment and verification processes
+**Solution**: Zero-Knowledge Proofs powered by the Midnight Network
 
-### Key Privacy Features
+### 🎯 Key Innovation
 
-- **✅ Skill Privacy**: Prove competency without revealing exact proficiency levels
-- **✅ Location Privacy**: Verify regional eligibility without exposing precise location
-- **✅ Salary Privacy**: Confirm expectations align without disclosing exact amounts
-- **✅ Anti-Sybil Protection**: Prevent duplicate applications using nullifiers
-- **✅ Selective Disclosure**: Optional post-application data revelation
+**Prove you're qualified without revealing personal details!**
+
+```
+Traditional Job Application:
+"I have 5 years React experience, live in New York, expect $120k salary"
+❌ All personal data exposed
+
+GhostHire ZK Application:
+"I meet your technical requirements" + ZK Proof
+✅ Qualifications verified, privacy protected
+```
 
 ---
 
-## 🏗️ Architecture Deep Dive
+## 🚀 Quick Start
 
-### System Components
+### Prerequisites
 
-```mermaid
-graph TB
-    subgraph "Frontend Layer"
-        UI[React UI]
-        Wallet[Wallet Connector]
-        ZKClient[ZK Proof Generator]
-    end
-    
-    subgraph "Backend Layer"
-        API[Express API]
-        ZKService[ZK Proof Service]
-        DB[(Database)]
-    end
-    
-    subgraph "Midnight Network"
-        Contract[JobBoard.compact]
-        Ledger[Midnight Ledger]
-        ProofProvider[Proof Provider]
-    end
-    
-    subgraph "ZK Components"
-        Circuit[Circom Circuit]
-        Verifier[Proof Verifier]
-        Keys[Verification Keys]
-    end
-    
-    UI --> Wallet
-    UI --> ZKClient
-    UI --> API
-    API --> ZKService
-    API --> DB
-    ZKClient --> Circuit
-    ZKService --> Circuit
-    Wallet --> Contract
-    Contract --> Ledger
-    ZKService --> ProofProvider
-    Verifier --> Keys
+- **Node.js 18+** 
+- **npm 8+**
+- **Git**
+- **Optional**: Docker for production deployment
+
+### 1-Minute Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/idkcallme/GhostHire.git
+cd GhostHire
+
+# Install all dependencies
+npm install
+
+# Start the full application
+npm run dev
+
+# 🎉 Open browser to http://localhost:5173
 ```
 
-### Data Flow
+**That's it!** The application runs with simulated Midnight Network features.
 
-1. **Job Posting**: Employer creates job with skill/location/salary requirements
-2. **Application**: Candidate generates ZK proof of eligibility
-3. **Verification**: Smart contract verifies proof on-chain
-4. **Privacy Score**: System calculates privacy preservation level
-5. **Decision**: Employer reviews applications without seeing private data
+---
+
+## ⚙️ Detailed Setup
+
+### Step 1: Environment Setup
+
+```bash
+# Clone and navigate
+git clone https://github.com/idkcallme/GhostHire.git
+cd GhostHire
+
+# Check Node.js version (should be 18+)
+node --version
+
+# Install dependencies for all workspaces
+npm install
+```
+
+### Step 2: Database Setup
+
+```bash
+# Navigate to backend
+cd backend
+
+# Create database and run migrations
+npx prisma generate
+npx prisma db push
+
+# Optional: Seed with sample data
+npx prisma db seed
+```
+
+### Step 3: Environment Configuration
+
+**Frontend (.env)**:
+```bash
+# Copy environment template
+cp app/.env.example app/.env
+```
+
+Edit `app/.env`:
+```env
+# Basic Configuration
+VITE_API_URL=http://localhost:3001
+VITE_APP_NAME=GhostHire
+
+# Midnight Network Configuration
+VITE_MIDNIGHT_MODE=development          # 'development' or 'production'
+VITE_MIDNIGHT_NETWORK_ID=testnet-02     # Midnight network ID
+VITE_MIDNIGHT_RPC_URL=https://rpc.testnet-02.midnight.network
+VITE_MIDNIGHT_INDEXER_URL=https://indexer.testnet-02.midnight.network
+VITE_MIDNIGHT_PROOF_SERVER=http://localhost:6300
+
+# Privacy Settings
+VITE_ENABLE_REAL_ZK_PROOFS=true         # Enable real ZK proof generation
+VITE_PRIVACY_SCORE_THRESHOLD=70         # Minimum privacy score
+```
+
+**Backend (.env)**:
+```bash
+# Copy environment template
+cp backend/env.example backend/.env
+```
+
+Edit `backend/.env`:
+```env
+# Database
+DATABASE_URL="file:./dev.db"
+
+# JWT Secret
+JWT_SECRET="your-super-secret-jwt-key-here"
+
+# API Configuration
+PORT=3001
+NODE_ENV=development
+
+# CORS
+CORS_ORIGIN=http://localhost:5173
+
+# Midnight Network
+MIDNIGHT_NETWORK_MODE=development
+MIDNIGHT_RPC_URL=https://rpc.testnet-02.midnight.network
+MIDNIGHT_PROOF_PROVIDER_URL=http://localhost:6300
+```
+
+### Step 4: Start Services
+
+**Option A: All Services Together**
+```bash
+# Start everything with one command
+npm run dev
+```
+
+**Option B: Individual Services**
+```bash
+# Terminal 1: Backend
+cd backend
+npm run dev
+
+# Terminal 2: Frontend  
+cd app
+npm run dev
+
+# Terminal 3: Optional Midnight Proof Server
+cd proof-server
+npm start
+```
 
 ---
 
 ## 🌙 Midnight Network Integration
 
-### Setting Up Midnight SDK
+### Real Midnight Network Packages
 
-```typescript
-// Install Midnight packages
-npm install @midnight-ntwrk/midnight-js-types \
-           @midnight-ntwrk/ledger \
-           @midnight-ntwrk/wallet-api \
-           @midnight-ntwrk/proof-provider \
-           @midnight-ntwrk/compact-runtime
-```
+GhostHire uses **actual Midnight Network SDK packages**:
 
-### Wallet Integration
-
-```typescript
-// app/src/services/midnightClient.ts
-import { WalletAPI } from '@midnight-ntwrk/wallet-api';
-import { createLedger } from '@midnight-ntwrk/ledger';
-
-export class MidnightClient {
-  private wallet: WalletAPI | null = null;
-  private ledger: any = null;
-
-  async connectWallet(): Promise<MidnightWalletInfo> {
-    // Check for browser wallet
-    if (typeof window !== 'undefined' && (window as any).midnight) {
-      const midnightWallet = (window as any).midnight;
-      
-      // Request account access
-      const accounts = await midnightWallet.request({ 
-        method: 'eth_requestAccounts' 
-      });
-      
-      // Get balance
-      const balance = await midnightWallet.request({ 
-        method: 'eth_getBalance', 
-        params: [accounts[0], 'latest'] 
-      });
-
-      this.wallet = midnightWallet;
-      
-      return {
-        address: accounts[0],
-        balance: { amount: parseInt(balance, 16), denom: 'DUST' },
-        connected: true
-      };
-    }
-    
-    // Fallback to mock wallet for development
-    return this.createMockWallet();
-  }
+```json
+{
+  "@midnight-ntwrk/wallet": "^5.0.0",
+  "@midnight-ntwrk/wallet-api": "^5.0.0", 
+  "@midnight-ntwrk/zswap": "^4.0.0",
+  "@midnight-ntwrk/compact-runtime": "^0.8.1",
+  "@midnight-ntwrk/ledger": "^4.0.0",
+  "@midnight-ntwrk/midnight-js-http-client-proof-provider": "^2.0.2",
+  "@midnight-ntwrk/midnight-js-network-id": "^2.0.2",
+  "@midnight-ntwrk/midnight-js-types": "^2.0.2",
+  "@midnight-ntwrk/wallet-sdk-hd": "^2.0.0"
 }
 ```
 
-### Ledger Connection
+### Midnight Network Modes
 
-```typescript
-// Connect to Midnight Network
-async initializeLedger() {
-  this.ledger = await createLedger({
-    rpcUrl: process.env.VITE_MIDNIGHT_RPC_URL || 'https://rpc.midnight.network',
-    networkId: process.env.VITE_MIDNIGHT_NETWORK_ID || 'midnight-testnet'
-  });
-  
-  // Get network status
-  const status = await this.ledger.getStatus();
-  console.log(`Connected to Midnight Network (Block: ${status.blockHeight})`);
-}
+#### 🔄 Development Mode (Default)
+- Uses enhanced simulation with realistic timing
+- No external network dependencies
+- Perfect for development and testing
+- Includes privacy scoring and proof generation
+
+```bash
+# Start in development mode
+VITE_MIDNIGHT_MODE=development npm run dev
 ```
+
+#### 🌙 Production Mode (Real Network)
+- Connects to actual Midnight TestNet-02
+- Real ZK proof generation via Midnight SDK
+- Requires network connectivity
+- Full blockchain integration
+
+```bash
+# Start with real Midnight Network
+VITE_MIDNIGHT_MODE=production npm run dev
+```
+
+### Smart Contracts (Compact)
+
+Deploy real Midnight Network smart contracts:
+
+```bash
+# Navigate to contracts directory
+cd contracts
+
+# Install Compact compiler
+npm install -g @midnight-ntwrk/compact
+
+# Compile contracts
+npm run compile
+
+# Deploy to TestNet
+npm run deploy:testnet
+
+# Verify deployment
+npm run verify
+```
+
+**JobBoard.compact Contract Features**:
+- Privacy-preserving job storage
+- ZK proof verification
+- Anti-Sybil protection
+- Application tracking
 
 ---
 
-## 🔐 Zero-Knowledge Proof Implementation
+## 💼 User Guide
 
-### Circuit Design
+### For Job Seekers
 
-Our eligibility circuit (`circuits/eligibility.circom`) proves three things privately:
+#### Step 1: Browse Available Jobs
+1. Visit the GhostHire homepage
+2. Click **"Browse Jobs"** 
+3. Filter by skills, location, or salary range
+4. Find interesting positions
 
+#### Step 2: Connect Wallet (Privacy Mode)
+1. Click **"Connect Wallet"** on any job
+2. Choose your privacy preferences:
+   - **High Privacy**: Minimal data sharing
+   - **Balanced**: Some details for better matching  
+   - **Transparent**: More details, faster hiring
+
+#### Step 3: Generate Privacy Proof
+1. Click **"Apply Privately"** on a job
+2. **Skill Assessment** (Step 1/3):
+   ```
+   Rate your skills (stays private):
+   ✓ React: ████████░░ 8/10
+   ✓ TypeScript: ██████░░░░ 6/10
+   ✓ Node.js: ███████░░░ 7/10
+   ```
+
+2. **Location Preference** (Step 2/3):
+   ```
+   Choose your region preference:
+   ○ Remote Worldwide
+   ○ North America  
+   ● Europe (selected)
+   ○ Asia Pacific
+   ```
+
+3. **Generate ZK Proof** (Step 3/3):
+   ```
+   🔒 Generating privacy-preserving proof...
+   
+   ⚡ Proof Generation: Complete
+   🛡️ Privacy Score: 94%
+   ✅ Eligibility: Confirmed
+   🔐 Your details remain private
+   ```
+
+#### Step 4: Submit Application
+1. Review your privacy proof summary
+2. Click **"Submit Private Application"**
+3. Receive blockchain receipt and application ID
+4. Track status in your dashboard
+
+### For Employers
+
+#### Step 1: Post a Job
+1. Click **"Post a Job"**
+2. **Job Details** (Step 1/4):
+   ```
+   Title: Senior React Developer
+   Company: TechCorp Inc.
+   Description: Build next-gen privacy apps...
+   ```
+
+3. **Required Skills** (Step 2/4):
+   ```
+   Add required skills:
+   + React (Required)
+   + TypeScript (Preferred)  
+   + Node.js (Nice to have)
+   ```
+
+4. **Compensation** (Step 3/4):
+   ```
+   Salary Range: $80,000 - $120,000
+   Benefits: Health, Dental, Remote OK
+   ```
+
+5. **Location** (Step 4/4):
+   ```
+   Allowed Regions:
+   ☑ Remote Worldwide
+   ☑ North America
+   ☐ Europe
+   ☑ Asia Pacific
+   ```
+
+#### Step 2: Review Applications
+1. Go to **"My Posted Jobs"**
+2. See privacy-preserving applications:
+   ```
+   Application #A1234
+   ✅ Meets all requirements (ZK verified)
+   🛡️ Privacy Score: 91%
+   🔐 Skills: Verified privately
+   📍 Region: Eligible (no exact location)
+   💰 Salary: Within range (no exact expectation)
+   
+   [Contact Applicant] [Request Details]
+   ```
+
+3. Contact qualified candidates while respecting privacy
+
+---
+
+## 🔒 Privacy Features
+
+### What Stays Completely Private
+
+✅ **Exact Skill Levels**: "I know React" not "React: 8/10"  
+✅ **Precise Location**: "I'm in Europe" not "Berlin, Germany"  
+✅ **Specific Salary**: "Within your range" not "$95,000"  
+✅ **Personal Identity**: Zero personal identifiers shared  
+✅ **Application History**: Previous applications stay private  
+
+### What Gets Proven Publicly
+
+✅ **Qualification Match**: ZK proof of meeting requirements  
+✅ **Eligibility Verification**: Cryptographic confirmation  
+✅ **Uniqueness**: Anti-Sybil protection (haven't applied before)  
+✅ **Authenticity**: Proof cannot be forged or replayed  
+
+### Privacy Score Calculation
+
+```javascript
+Privacy Score = Base Match (60%) + Privacy Bonus (25%) + Diversification (15%)
+
+Example:
+- 5/5 required skills matched: +60%
+- 8 total skills (noise): +24%  
+- 4 skill categories (diversity): +12%
+- Final Score: 96% Privacy Protection
+```
+
+### Zero-Knowledge Technology
+
+**Circom Circuits** (Enhanced Mode):
 ```circom
-template EligibilityProof(MAX_SKILLS, MAX_REGIONS, MERKLE_TREE_DEPTH) {
-    // Public inputs (visible on blockchain)
-    signal input jobId;
-    signal input nullifier;
-    signal output eligible;
-    signal input timestamp;
+template EligibilityCheck() {
+    signal input skills[10];        // Private: Your skill levels
+    signal input requirements[5];   // Public: Job requirements  
+    signal input location;          // Private: Your location
+    signal input salary;            // Private: Salary expectation
     
-    // Private inputs (hidden from blockchain)
-    signal private input skills[MAX_SKILLS];
-    signal private input region;
-    signal private input expectedSalary;
-    signal private input skillThresholds[MAX_SKILLS];
-    signal private input salaryMin;
-    signal private input salaryMax;
-    signal private input allowedRegions[MAX_REGIONS];
-    signal private input applicantSecret;
-
-    // 1. Verify skills meet thresholds
-    component skillComparators[MAX_SKILLS];
-    for (var i = 0; i < MAX_SKILLS; i++) {
-        skillComparators[i] = GreaterEqualThan(8);
-        skillComparators[i].in[0] <== skills[i];
-        skillComparators[i].in[1] <== skillThresholds[i];
-    }
-
-    // 2. Verify salary expectations are within range
-    component salaryMinCheck = GreaterEqualThan(32);
-    salaryMinCheck.in[0] <== expectedSalary;
-    salaryMinCheck.in[1] <== salaryMin;
+    signal output eligible;         // Public: Are you qualified?
+    signal output nullifier;        // Public: Uniqueness proof
     
-    component salaryMaxCheck = LessEqualThan(32);
-    salaryMaxCheck.in[0] <== expectedSalary;
-    salaryMaxCheck.in[1] <== salaryMax;
-
-    // 3. Verify region membership (simplified)
-    component regionHasher = Poseidon(1);
-    regionHasher.inputs[0] <== region;
-
-    // 4. Generate nullifier to prevent duplicate applications
-    component nullifierHasher = Poseidon(3);
-    nullifierHasher.inputs[0] <== applicantSecret;
-    nullifierHasher.inputs[1] <== jobId;
-    nullifierHasher.inputs[2] <== timestamp;
-    
-    // Final eligibility check
-    // ... (combining all verification results)
+    // ZK logic: Prove eligibility without revealing details
 }
 ```
 
-### Proof Generation
+---
 
+## 🛠️ Developer Guide
+
+### Architecture Overview
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   React App     │    │   Express API   │    │ Midnight Network│
+│                 │    │                 │    │                 │
+│ • UI Components │◄──►│ • REST APIs     │◄──►│ • Smart Contract│
+│ • ZK Proof Gen  │    │ • WebSocket     │    │ • ZK Verification│
+│ • Wallet Connect│    │ • Database      │    │ • Blockchain    │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+### Key Components
+
+**Frontend Architecture**:
 ```typescript
-// backend/src/services/midnightNetwork.ts
-async generateEligibilityProof(input: MidnightProofInput): Promise<MidnightProofResult> {
-  // Prepare circuit inputs
-  const circuitInputs = {
-    // Private inputs
-    skills: input.skills,
-    region: this.hashString(input.region),
-    expectedSalary: input.expectedSalary,
-    applicantSecret: this.hashString(input.applicantSecret),
-    
-    // Public inputs
-    jobId: this.hashString(input.jobId),
-    skillThresholds: input.skillThresholds,
-    salaryMin: input.salaryMin,
-    salaryMax: input.salaryMax,
-    regionMerkleRoot: input.regionMerkleRoot,
-    nullifier: input.nullifier,
-    timestamp: input.timestamp
-  };
+// Real Midnight SDK Integration
+import { WalletBuilder } from '@midnight-ntwrk/wallet';
+import { NetworkId } from '@midnight-ntwrk/zswap';
 
-  // Generate proof using snarkjs
-  const { proof, publicSignals } = await snarkjs.groth16.fullProve(
-    circuitInputs,
-    'circuits/eligibility.wasm',
-    'circuits/eligibility_final.zkey'
-  );
-
-  return {
-    proof,
-    publicSignals,
-    proofHash: this.generateProofHash(proof, publicSignals)
-  };
+class GracefulMidnightProvider {
+  async generateProof(data: ProofData): Promise<ZKProof> {
+    try {
+      // Try real Midnight Network first
+      const wallet = await WalletBuilder.build(/* TestNet config */);
+      return await this.generateRealProof(wallet, data);
+    } catch (error) {
+      // Graceful fallback to enhanced simulation
+      return await this.generateSimulatedProof(data);
+    }
+  }
 }
 ```
 
-### Circuit Compilation
+**Backend Services**:
+```typescript
+// Midnight Network Service
+export class MidnightNetworkService {
+  private httpProofProvider: HttpClientProofProvider;
+  
+  async verifyProof(proof: ZKProof): Promise<boolean> {
+    // Real verification via Midnight SDK
+    return await this.httpProofProvider.verifyProof(proof);
+  }
+}
+```
+
+### Development Workflow
 
 ```bash
-# Compile the circuit
-npm run compile-circuits
+# 1. Make changes to frontend
+cd app/src/components/
+# Edit React components...
 
-# This runs:
-# 1. circom eligibility.circom --r1cs --wasm --sym --c
-# 2. Downloads powers of tau ceremony file
-# 3. snarkjs groth16 setup eligibility.r1cs powersOfTau28_hez_final_15.ptau
-# 4. Generates verification key
+# 2. Update backend APIs  
+cd backend/src/routes/
+# Modify Express endpoints...
+
+# 3. Test changes
+npm run test:e2e
+
+# 4. Build for production
+npm run build
+
+# 5. Deploy
+npm run deploy
 ```
 
----
+### Adding New Features
 
-## 📜 Smart Contract Development
+**Example: Add New Privacy Mode**
 
-### JobBoard.compact Contract
-
-```compact
-// contracts/JobBoard.compact
-contract JobBoard {
-    // State variables
-    state jobCount: Nat = 0;
-    state jobs: Map<Nat, Job> = {};
-    state applications: Map<Bytes32, Application> = {};
-    state nullifiers: Set<Bytes32> = {};
-    
-    // Job posting function
-    public postJob(
-        title: String,
-        description: String,
-        skillThresholds: Map<String, Nat>,
-        salaryMin: Nat,
-        salaryMax: Nat,
-        allowedRegions: List<String>,
-        regionMerkleRoot: Bytes32
-    ): Nat {
-        // Validate inputs
-        require(title.length > 0, "Title cannot be empty");
-        require(salaryMin > 0, "Minimum salary must be positive");
-        require(salaryMax >= salaryMin, "Maximum salary must be >= minimum");
-        
-        // Create new job
-        let newJobId = jobCount + 1;
-        let newJob = Job {
-            id: newJobId,
-            employer: msg.sender,
-            title: title,
-            description: description,
-            skillThresholds: skillThresholds,
-            salaryMin: salaryMin,
-            salaryMax: salaryMax,
-            allowedRegions: allowedRegions,
-            regionMerkleRoot: regionMerkleRoot,
-            isActive: true,
-            createdAt: block.timestamp,
-            applicationCount: 0
-        };
-        
-        // Update state
-        jobs[newJobId] = newJob;
-        jobCount = newJobId;
-        
-        emit JobPosted(newJobId, msg.sender, title);
-        return newJobId;
-    }
-
-    // ZK proof application submission
-    public submitApplication(
-        jobId: Nat,
-        eligibilityProof: EligibilityProof,
-        privacyScore: Nat
-    ): Bytes32 {
-        // Validate job exists and is active
-        require(jobs.contains(jobId), "Job does not exist");
-        require(jobs[jobId].isActive, "Job is not active");
-        
-        // Extract public inputs from proof
-        let publicInputs = eligibilityProof.publicInputs;
-        let nullifier = publicInputs[1];
-        let eligible = publicInputs[2];
-        
-        // Check nullifier hasn't been used (prevent double applications)
-        let nullifierHash = Bytes32.from(nullifier);
-        require(!nullifiers.contains(nullifierHash), "Application already submitted");
-        
-        // Verify ZK proof of eligibility
-        let proofValid = verifyEligibilityProof(
-            eligibilityProof.proof,
-            publicInputs,
-            jobs[jobId]
-        );
-        require(proofValid, "Invalid eligibility proof");
-        require(eligible == Field.from(1), "Applicant not eligible");
-        
-        // Create application record
-        let applicationId = hash(nullifier, Field.from(jobId), block.timestamp);
-        let application = Application {
-            id: applicationId,
-            jobId: jobId,
-            nullifierHash: nullifierHash,
-            zkProofHash: hash(eligibilityProof.proof),
-            privacyScore: privacyScore,
-            status: ApplicationStatus.Pending,
-            submittedAt: block.timestamp,
-            reviewedAt: None
-        };
-        
-        // Update state
-        applications[applicationId] = application;
-        nullifiers.insert(nullifierHash);
-        jobs[jobId].applicationCount = jobs[jobId].applicationCount + 1;
-        
-        emit ApplicationSubmitted(applicationId, jobId, privacyScore);
-        return applicationId;
-    }
-}
-```
-
-### Contract Deployment
-
+1. **Update Types**:
 ```typescript
-// Deploy to Midnight Network
-npm run deploy:testnet
-
-// This runs scripts/deploy-contract.ts which:
-// 1. Connects to Midnight testnet
-// 2. Compiles and validates the contract
-// 3. Deploys with proper gas estimation
-// 4. Verifies deployment success
-// 5. Saves deployment info for frontend use
+// app/src/types/privacy.ts
+export type PrivacyMode = 'stealth' | 'balanced' | 'transparent' | 'maximum';
 ```
 
----
-
-## 🎨 Frontend Integration
-
-### Privacy Data Visualization
-
-```tsx
-// app/src/components/PrivacyDataPanel.tsx
-export const PrivacyDataPanel: React.FC<PrivacyDataPanelProps> = ({
-  title,
-  data,
-  privacyScore
-}) => {
-  return (
-    <div className="privacy-panel">
-      <div className="privacy-score-badge">
-        <Shield className="w-5 h-5" />
-        <span>{privacyScore}% Private</span>
-      </div>
-      
-      {data.map((item) => (
-        <div key={item.label} className="privacy-item">
-          <div className="privacy-status">
-            {item.isPrivate ? (
-              <Lock className="w-4 h-4 text-green-600" />
-            ) : (
-              <Unlock className="w-4 h-4 text-orange-600" />
-            )}
-            <span>{item.isPrivate ? 'Private' : 'Revealed'}</span>
-          </div>
-          
-          <div className="privacy-details">
-            <h4>{item.label}</h4>
-            <p>{item.description}</p>
-            
-            {item.isPrivate && item.zkProof && (
-              <div className="zk-proof-hash">
-                <Shield className="w-4 h-4" />
-                <span>ZK Proof: {item.zkProof.slice(0, 16)}...</span>
-              </div>
-            )}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
-```
-
-### ZK Proof Application Flow
-
-```tsx
-// app/src/zk/ProofStepper.tsx
-export function ProofStepper({ job }: { job: any }) {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [proof, setProof] = useState<any>(null);
-  const [privacyScore, setPrivacyScore] = useState(0);
-
-  const steps = [
-    { title: "Set Your Skills", component: SkillsStep },
-    { title: "Choose Region", component: RegionStep },
-    { title: "Salary Expectations", component: SalaryStep },
-    { title: "Generate Proof", component: ProofStep }
-  ];
-
-  async function generateProof(formData: any) {
-    // Call backend to generate ZK proof
-    const response = await axios.post('/api/zk/generate-proof', {
-      jobId: job.id,
-      skills: formData.skills,
-      region: formData.region,
-      expectedSalary: formData.salary,
-      skillThresholds: job.skillThresholds,
-      salaryMin: job.salaryMin,
-      salaryMax: job.salaryMax,
-      allowedRegions: job.allowedRegions
-    });
-
-    if (response.data.eligible) {
-      setProof(response.data.proof);
-      setPrivacyScore(response.data.privacyScore);
-      
-      // Submit to blockchain via Midnight client
-      await midnightClient.submitApplication({
-        jobId: job.id,
-        proof: response.data.proof,
-        privacyScore: response.data.privacyScore
-      });
-    }
-  }
-
-  return (
-    <div className="proof-stepper">
-      <Stepper steps={steps} currentStep={currentStep} />
-      
-      {/* Privacy Score Display */}
-      <PrivacyDataPanel 
-        title="Your Application Privacy"
-        data={generatePrivacyData(formData)}
-        privacyScore={privacyScore}
-      />
-      
-      {/* Step Content */}
-      <div className="step-content">
-        {steps[currentStep].component}
-      </div>
-    </div>
-  );
-}
-```
-
-### Accessibility Features
-
-```tsx
-// Comprehensive accessibility implementation
-export const AccessibilitySettings = () => {
-  const { theme, setTheme, reducedMotion, setReducedMotion } = useTheme();
-
-  return (
-    <div role="dialog" aria-modal="true" aria-labelledby="accessibility-title">
-      <h2 id="accessibility-title">Accessibility Settings</h2>
-      
-      {/* Theme Selection with proper ARIA */}
-      <fieldset>
-        <legend>Theme Preference</legend>
-        {themes.map(themeOption => (
-          <button
-            key={themeOption}
-            onClick={() => setTheme(themeOption)}
-            aria-pressed={theme === themeOption}
-            className={`theme-button ${theme === themeOption ? 'selected' : ''}`}
-          >
-            {themeOption} Theme
-            {theme === themeOption && <Check aria-hidden="true" />}
-          </button>
-        ))}
-      </fieldset>
-
-      {/* Reduced Motion Toggle */}
-      <div className="setting-row">
-        <label htmlFor="reduce-motion">Reduce Motion</label>
-        <button
-          id="reduce-motion"
-          role="switch"
-          aria-checked={reducedMotion}
-          onClick={() => setReducedMotion(!reducedMotion)}
-        >
-          <span className="switch-track">
-            <span className="switch-thumb" />
-          </span>
-        </button>
-      </div>
-
-      {/* Keyboard Navigation Help */}
-      <div className="keyboard-help">
-        <h3>Keyboard Navigation</h3>
-        <dl>
-          <dt><kbd>Tab</kbd></dt>
-          <dd>Navigate forward</dd>
-          <dt><kbd>Shift + Tab</kbd></dt>
-          <dd>Navigate backward</dd>
-          <dt><kbd>Enter/Space</kbd></dt>
-          <dd>Activate buttons</dd>
-        </dl>
-      </div>
-    </div>
-  );
-};
-```
-
----
-
-## ⚙️ Backend API Development
-
-### ZK Proof Service Integration
-
+2. **Modify ZK Service**:
 ```typescript
-// backend/src/services/zkProof.ts
-export class ZKProofService {
-  async generateEligibilityProof(inputs: EligibilityInputs): Promise<ProofResult> {
-    // Convert inputs to Midnight format
-    const midnightInputs: MidnightProofInput = {
-      skills: Object.values(inputs.skills),
-      region: inputs.region,
-      expectedSalary: inputs.expectedSalary,
-      applicantSecret: this.generateApplicantSecret(),
-      jobId: inputs.jobId,
-      skillThresholds: Object.values(inputs.skillThresholds),
-      salaryMin: inputs.salaryMin,
-      salaryMax: inputs.salaryMax,
-      regionMerkleRoot: inputs.regionMerkleRoot,
-      nullifier: inputs.nullifierHash,
-      timestamp: Math.floor(Date.now() / 1000)
-    };
-
-    // Generate proof using Midnight service
-    const result = await midnightService.generateEligibilityProof(midnightInputs);
-    
-    return {
-      proof: result.proof,
-      publicInputs: result.publicSignals,
-      proofHash: result.proofHash,
-      circuitId: 'eligibility_midnight_v1.0'
-    };
-  }
-
-  async verifyProof(data: { proof: any; publicSignals: string[]; jobData: any }): Promise<VerificationResult> {
-    // Try Midnight network verification first
-    const midnightResult = await midnightService.verifyProofOnChain({
-      proof: data.proof,
-      publicSignals: data.publicSignals,
-      proofHash: this.generateProofHash(data.proof, data.publicSignals)
-    });
-
-    if (midnightResult.valid) {
-      const eligible = data.publicSignals[2] === '1';
-      return {
-        valid: true,
-        eligible,
-        transactionHash: midnightResult.transactionHash
-      };
-    }
-
-    // Fallback to local verification
-    return this.fallbackVerifyProof(data);
+// app/src/services/midnightZK.ts
+export class MidnightZKService {
+  async generateProofWithMode(data: any, mode: PrivacyMode) {
+    const privacyMultiplier = this.getPrivacyMultiplier(mode);
+    // Generate proof with privacy adjustments...
   }
 }
 ```
 
-### API Routes with Privacy Focus
-
+3. **Update UI Components**:
 ```typescript
-// backend/src/routes/applications.ts
-router.post('/submit', auth, async (req, res) => {
-  try {
-    const { jobId, zkProof, privacyScore } = req.body;
-    
-    // Verify the ZK proof
-    const verification = await zkProofService.verifyProof({
-      proof: zkProof.proof,
-      publicSignals: zkProof.publicSignals,
-      jobData: await getJobData(jobId)
-    });
-
-    if (!verification.valid || !verification.eligible) {
-      return res.status(400).json({ 
-        error: 'Invalid proof or not eligible for position' 
-      });
-    }
-
-    // Submit to Midnight Network
-    const result = await midnightService.verifyProofOnChain({
-      proof: zkProof.proof,
-      publicSignals: zkProof.publicSignals,
-      proofHash: zkProof.proofHash
-    });
-
-    // Create application record
-    const application = await prisma.application.create({
-      data: {
-        jobId,
-        nullifierHash: zkProof.publicSignals[1],
-        zkProofHash: zkProof.proofHash,
-        privacyScore,
-        status: 'PENDING',
-        transactionHash: result.transactionHash
-      }
-    });
-
-    res.json({
-      success: true,
-      applicationId: application.id,
-      transactionHash: result.transactionHash,
-      privacyScore
-    });
-
-  } catch (error) {
-    console.error('Application submission failed:', error);
-    res.status(500).json({ error: 'Submission failed' });
-  }
-});
+// app/src/components/PrivacySelector.tsx
+export function PrivacySelector() {
+  const modes = ['stealth', 'balanced', 'transparent', 'maximum'];
+  // Render privacy mode selection...
+}
 ```
 
 ---
 
-## 🚀 Deployment Guide
+## 🧪 Testing & Validation
 
-### Environment Setup
+### Automated Testing
 
+**End-to-End Test Suite**:
 ```bash
-# .env configuration for different networks
-# Testnet
-MIDNIGHT_RPC_URL=https://rpc.testnet.midnight.network
-MIDNIGHT_NETWORK_ID=midnight-testnet
-PROOF_PROVIDER_URL=http://localhost:6565
+# Run complete E2E tests
+npm run test:e2e
 
-# Mainnet (production)
-MIDNIGHT_RPC_URL=https://rpc.midnight.network
-MIDNIGHT_NETWORK_ID=midnight-mainnet
-
-# Deployment wallet (use hardware wallet in production)
-DEPLOYER_MNEMONIC="your twelve word mnemonic phrase here"
+# Run specific test suites
+npm run test:jobs        # Job posting/browsing
+npm run test:privacy     # ZK proof generation  
+npm run test:applications # Application workflow
 ```
 
-### Contract Deployment Process
+**Test Coverage Areas**:
+- ✅ Job posting and display
+- ✅ Privacy proof generation
+- ✅ Application submission
+- ✅ Wallet connection simulation
+- ✅ Midnight Network integration
+- ✅ Error handling and fallbacks
 
+### Manual Testing Checklist
+
+**Job Poster Workflow**:
+- [ ] Create account and login
+- [ ] Post job with all required fields
+- [ ] See job appear in browse section
+- [ ] Receive ZK-verified applications
+- [ ] Contact qualified candidates
+
+**Job Seeker Workflow**:
+- [ ] Browse available positions
+- [ ] Connect wallet (simulated)
+- [ ] Generate privacy-preserving proof
+- [ ] Submit application successfully
+- [ ] Track application status
+- [ ] Receive confirmation receipt
+
+**Privacy Validation**:
+- [ ] Skill levels stay private
+- [ ] Location remains general
+- [ ] Salary expectations hidden
+- [ ] ZK proofs verify correctly
+- [ ] Privacy scores > 90%
+
+### Midnight Network Testing
+
+**Development Mode Tests**:
 ```bash
-# 1. Compile ZK circuits (one-time setup)
-npm run compile-circuits
+# Test with simulated Midnight Network
+VITE_MIDNIGHT_MODE=development npm run test
 
-# 2. Deploy to testnet
-npm run deploy:testnet
+# Verify graceful fallbacks work
+npm run test:fallback-mode
+```
 
-# 3. Verify deployment
-npm run verify:testnet
+**Production Mode Tests**:
+```bash
+# Test with real Midnight Network (requires connectivity)
+VITE_MIDNIGHT_MODE=production npm run test:network
 
-# 4. Update frontend configuration with contract address
-# Edit app/.env with deployed contract address
+# Test smart contract interactions
+npm run test:contracts
+```
 
-# 5. Deploy to mainnet (production)
-npm run deploy:mainnet
-npm run verify:mainnet
+---
+
+## 🚢 Deployment
+
+### Local Development
+```bash
+# Start full development environment
+npm run dev
+
+# Access points:
+# Frontend: http://localhost:5173
+# Backend: http://localhost:3001  
+# API Docs: http://localhost:3001/docs
 ```
 
 ### Production Deployment
 
-```yaml
-# docker-compose.production.yml
-version: '3.8'
-services:
-  frontend:
-    build: 
-      context: ./app
-      dockerfile: Dockerfile.prod
-    ports:
-      - "80:80"
-    environment:
-      - VITE_MIDNIGHT_RPC_URL=${MIDNIGHT_RPC_URL}
-      - VITE_JOB_BOARD_CONTRACT_ADDRESS=${CONTRACT_ADDRESS}
-  
-  backend:
-    build: 
-      context: ./backend
-      dockerfile: Dockerfile.prod
-    ports:
-      - "3001:3001"
-    environment:
-      - MIDNIGHT_RPC_URL=${MIDNIGHT_RPC_URL}
-      - JOB_BOARD_CONTRACT_ADDRESS=${CONTRACT_ADDRESS}
-      - DATABASE_URL=${DATABASE_URL}
-    
-  database:
-    image: postgres:15
-    environment:
-      - POSTGRES_DB=ghosthire
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-volumes:
-  postgres_data:
-```
-
----
-
-## 🧪 Testing & Verification
-
-### Contract Testing
+#### Option 1: Traditional VPS/Cloud
 
 ```bash
-# Run contract verification
-npm run verify:testnet
+# Build for production
+npm run build
 
-# Expected output:
-# ✅ Contract exists on blockchain
-# ✅ testGetJobCount passed
-# ✅ testGetActiveJobs passed  
-# ✅ testGetPrivacyStats passed
-# ✅ ZK proof support verified
-# ✅ Security features implemented
-# 
-# 📊 Overall score: 95%
-# Status: VERIFIED
+# Start production services
+NODE_ENV=production npm start
+
+# Or use PM2 for process management
+npm install -g pm2
+pm2 start ecosystem.config.js
 ```
 
-### End-to-End Testing
+#### Option 2: Docker Deployment
 
-```typescript
-// app/cypress/e2e/job-application-flow.cy.ts
-describe('Privacy-Preserving Job Application Flow', () => {
-  it('should complete full application with ZK proof', () => {
-    // Visit job posting
-    cy.visit('/jobs/1');
-    
-    // Connect wallet
-    cy.get('[data-testid="connect-wallet"]').click();
-    cy.get('[data-testid="mock-wallet"]').click();
-    
-    // Start application
-    cy.get('[data-testid="apply-button"]').click();
-    
-    // Step 1: Skills
-    cy.get('[data-testid="skill-programming"]').type('85');
-    cy.get('[data-testid="skill-rust"]').type('75');
-    cy.get('[data-testid="next-step"]').click();
-    
-    // Step 2: Region
-    cy.get('[data-testid="region-select"]').select('US-CA');
-    cy.get('[data-testid="next-step"]').click();
-    
-    // Step 3: Salary
-    cy.get('[data-testid="salary-expectation"]').type('95000');
-    cy.get('[data-testid="generate-proof"]').click();
-    
-    // Wait for proof generation
-    cy.get('[data-testid="proof-status"]').should('contain', 'Generating proof...');
-    cy.get('[data-testid="proof-status"]').should('contain', 'Proof generated', { timeout: 10000 });
-    
-    // Verify privacy score
-    cy.get('[data-testid="privacy-score"]').should('contain', '95%');
-    
-    // Submit application
-    cy.get('[data-testid="submit-application"]').click();
-    
-    // Verify success
-    cy.url().should('include', '/receipt/');
-    cy.get('[data-testid="application-success"]').should('be.visible');
-  });
+```bash
+# Build and start with Docker Compose
+docker-compose -f docker-compose.production.yml up -d
 
-  it('should show privacy data breakdown', () => {
-    cy.visit('/applications');
-    cy.get('[data-testid="privacy-panel"]').should('be.visible');
-    
-    // Verify private data items
-    cy.get('[data-testid="skill-privacy"]').should('contain', 'Private');
-    cy.get('[data-testid="location-privacy"]').should('contain', 'Private');
-    cy.get('[data-testid="salary-privacy"]').should('contain', 'Private');
-    
-    // Check ZK proof hashes
-    cy.get('[data-testid="zk-proof-hash"]').should('be.visible');
-  });
-});
+# View logs
+docker-compose logs -f
+
+# Scale services
+docker-compose up -d --scale app=3
 ```
 
----
+#### Option 3: Cloud Deployment (Vercel + Railway)
 
-## 🎨 Customization Guide
+**Frontend (Vercel)**:
+```bash
+# Install Vercel CLI
+npm install -g vercel
 
-### Adding New Privacy Features
-
-1. **Extend the ZK Circuit**
-```circom
-// Add new private input
-signal private input newPrivateField;
-
-// Add verification logic
-component newVerification = YourCustomVerification();
-newVerification.in <== newPrivateField;
+# Deploy frontend
+cd app
+vercel --prod
 ```
 
-2. **Update Smart Contract**
-```compact
-// Add to Application struct
-struct Application {
-    // ... existing fields
-    newPrivateFieldProof: Bytes32,
-}
+**Backend (Railway)**:
+```bash
+# Connect to Railway
+railway login
+railway link
+
+# Deploy backend with environment variables
+railway up --environment production
 ```
 
-3. **Extend Frontend**
-```tsx
-// Add to privacy panel
-const newPrivacyItem = {
-  label: "New Private Field",
-  value: formData.newField,
-  isPrivate: true,
-  zkProof: proof.newFieldProof,
-  description: "This field is kept completely private"
-};
+### Environment Variables for Production
+
+**Frontend (.env.production)**:
+```env
+VITE_MIDNIGHT_MODE=production
+VITE_API_URL=https://your-api-domain.com
+VITE_MIDNIGHT_RPC_URL=https://rpc.testnet-02.midnight.network
 ```
 
-### Custom Theme Development
-
-```css
-/* Custom theme variables */
-:root[data-theme="custom"] {
-  --color-primary: #your-primary-color;
-  --color-background: #your-background;
-  --color-text-primary: #your-text-color;
-}
-
-/* Dark mode variant */
-:root[data-theme="custom-dark"] {
-  --color-primary: #your-dark-primary;
-  --color-background: #your-dark-background;
-  --color-text-primary: #your-dark-text;
-}
-```
-
-### Adding New Job Criteria
-
-```typescript
-// Extend job requirements
-interface JobRequirements {
-  skills: Record<string, number>;
-  location: string[];
-  salaryRange: [number, number];
-  
-  // New criteria
-  experience: number;
-  education: string;
-  certifications: string[];
-}
-
-// Update ZK circuit accordingly
-template ExtendedEligibilityProof() {
-    // Add new private inputs
-    signal private input experienceYears;
-    signal private input educationLevel;
-    signal private input certificationHashes[MAX_CERTS];
-    
-    // Add verification logic
-    // ...
-}
+**Backend (.env.production)**:
+```env
+NODE_ENV=production
+DATABASE_URL=postgresql://user:pass@host:port/db
+CORS_ORIGIN=https://your-frontend-domain.com
 ```
 
 ---
@@ -927,98 +665,155 @@ template ExtendedEligibilityProof() {
 
 ### Common Issues
 
-**1. Circuit Compilation Errors**
+#### 1. Node.js Version Conflicts
 ```bash
-# Check Circom installation
-circom --version
+# Check Node version (must be 18+)
+node --version
 
-# Verify circuit syntax
-circom eligibility.circom --r1cs --wasm --sym
+# Use nvm to switch versions
+nvm install 18
+nvm use 18
 ```
 
-**2. Wallet Connection Issues**
+#### 2. Midnight Network Connection Issues
+```bash
+# Check if running in correct mode
+echo $VITE_MIDNIGHT_MODE
+
+# Test network connectivity
+curl https://rpc.testnet-02.midnight.network/health
+
+# Fall back to development mode
+VITE_MIDNIGHT_MODE=development npm run dev
+```
+
+#### 3. Database Connection Problems
+```bash
+# Reset database
+cd backend
+rm -f prisma/dev.db
+npx prisma db push
+npx prisma generate
+```
+
+#### 4. Port Conflicts
+```bash
+# Check what's running on ports
+netstat -tulpn | grep :3001
+netstat -tulpn | grep :5173
+
+# Kill processes if needed
+kill -9 $(lsof -t -i:3001)
+kill -9 $(lsof -t -i:5173)
+```
+
+#### 5. Build Errors
+```bash
+# Clear all caches
+npm run clean
+npm install
+
+# Rebuild from scratch
+rm -rf node_modules package-lock.json
+npm install
+npm run build
+```
+
+### Getting Help
+
+**Check Application Logs**:
+```bash
+# Frontend logs (browser console)
+Open DevTools → Console tab
+
+# Backend logs  
+cd backend
+npm run dev # Check terminal output
+
+# Docker logs
+docker-compose logs -f
+```
+
+**Community Support**:
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/idkcallme/GhostHire/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/idkcallme/GhostHire/discussions)  
+- 🌙 **Midnight Network**: [Official Discord](https://discord.gg/midnight)
+- 📧 **Direct Contact**: Create an issue with detailed logs
+
+---
+
+## 🎯 Advanced Configuration
+
+### Custom Privacy Settings
+
+**Ultra-High Privacy Mode**:
 ```typescript
-// Check for Midnight wallet
-if (!window.midnight) {
-  console.error('Midnight wallet not detected');
-  // Show installation instructions
+// app/src/config/privacy.ts
+export const ULTRA_PRIVACY_CONFIG = {
+  minPrivacyScore: 95,
+  skillNoiseFactor: 0.8,
+  locationObfuscation: 'continent',
+  salaryBanding: 'quartile',
+  additionalDiversification: true
+};
+```
+
+**Performance Optimization**:
+```typescript
+// app/src/config/performance.ts
+export const PERFORMANCE_CONFIG = {
+  proofGenerationTimeout: 30000,
+  walletConnectionTimeout: 10000,
+  enableProofCaching: true,
+  batchApplications: false
+};
+```
+
+### Smart Contract Customization
+
+**Modify Compact Contract**:
+```compact
+// contracts/JobBoard.compact
+contract JobBoard {
+  // Add custom privacy parameters
+  function postJob(
+    jobData: JobData,
+    privacyLevel: PrivacyLevel,
+    customSettings: PrivacySettings
+  ) -> Result<JobId, Error> {
+    // Custom job posting logic
+  }
 }
 ```
 
-**3. Proof Generation Failures**
+### Analytics and Monitoring
+
+**Privacy Analytics Dashboard**:
 ```typescript
-// Enable debug logging
-const { proof, publicSignals } = await snarkjs.groth16.fullProve(
-  circuitInputs,
-  wasmPath,
-  zkeyPath,
-  { verbose: true } // Enable debugging
-);
-```
-
-**4. Contract Deployment Issues**
-```bash
-# Check network connection
-npm run verify:testnet
-
-# Verify wallet balance
-# Ensure sufficient DUST tokens for gas
-```
-
-### Performance Optimization
-
-**Frontend Optimization**
-```typescript
-// Lazy load ZK components
-const ProofStepper = lazy(() => import('./zk/ProofStepper'));
-
-// Optimize proof generation with Web Workers
-const proofWorker = new Worker('/zk-proof-worker.js');
-```
-
-**Backend Optimization**
-```typescript
-// Cache verification keys
-const verificationKeyCache = new Map();
-
-// Batch proof verification
-async function verifyProofBatch(proofs: ProofData[]) {
-  return Promise.all(proofs.map(proof => verifyProof(proof)));
-}
+// Add to backend/src/routes/analytics.ts
+router.get('/privacy-metrics', async (req, res) => {
+  const metrics = {
+    averagePrivacyScore: await calculateAveragePrivacyScore(),
+    proofGenerationTimes: await getProofTimes(),
+    networkConnectivity: await testMidnightConnection(),
+    applicationSuccessRate: await getSuccessRate()
+  };
+  res.json(metrics);
+});
 ```
 
 ---
 
-## 📚 Additional Resources
+**🎉 Congratulations!** You now have a complete understanding of GhostHire and can set up, use, and customize the privacy-preserving job board.
 
-### Documentation Links
-- [Midnight Network Documentation](https://midnight.network/docs)
-- [Circom Language Reference](https://docs.circom.io)
-- [Zero-Knowledge Proof Concepts](https://ethereum.org/en/zero-knowledge-proofs/)
-
-### Community Resources
-- [Midnight Network Discord](https://discord.gg/midnight)
-- [ZK Development Forums](https://forum.0xparc.org/)
-- [Privacy Engineering Resources](https://github.com/privacy-engineering-cmu)
-
-### Example Projects
-- [ZK Identity Verification](https://github.com/privacy-scaling-explorations/zk-identity)
-- [Private Voting Systems](https://github.com/vocdoni/zk-census-proof)
-- [Confidential Transactions](https://github.com/ElementsProject/confidential-transactions)
+**Next Steps**:
+- 🚀 Deploy to production with real Midnight Network
+- 🔧 Customize privacy settings for your use case  
+- 🌟 Contribute improvements to the open-source project
+- 📢 Share your privacy-preserving hiring success stories!
 
 ---
 
-## 🎯 Next Steps
+*Built with 🌙 for the Midnight Network "Protect That Data" Challenge*
 
-After completing this tutorial, you can:
-
-1. **Deploy to Production** - Use the deployment scripts for mainnet
-2. **Add Custom Features** - Extend with your own privacy requirements
-3. **Scale the System** - Implement advanced ZK techniques
-4. **Contribute Back** - Submit improvements to the open-source project
-
-**Congratulations! You've built a complete privacy-preserving application with Midnight Network! 🎉**
-
----
-
-*This tutorial demonstrates the power of zero-knowledge proofs in creating privacy-first applications. The techniques shown here can be applied to many other domains beyond job applications.*
+**GhostHire: Where Privacy Meets Opportunity**

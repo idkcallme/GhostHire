@@ -12,9 +12,12 @@
     "mock-issuer"
   ],
   "scripts": {
+    "start": "node start.js",
     "dev": "npm run dev --workspace=app",
-    "dev:backend": "npm run dev --workspace=backend",
+    "dev:backend": "npm run dev --workspace=backend", 
+    "dev:full": "concurrently \"npm run dev:backend\" \"npm run dev\" --names \"backend,frontend\" --prefix-colors \"blue,green\"",
     "dev:all": "concurrently \"npm run dev:backend\" \"npm run dev\"",
+    "setup": "npm run db:push --workspace=backend && npm run db:seed --workspace=backend",
     "build": "npm run build --workspace=app",
     "build:backend": "npm run build --workspace=backend",
     "build:circuits": "npm run build --workspace=circuits",
@@ -39,6 +42,9 @@
     "lint:fix": "npm run lint:fix --workspaces",
     "typecheck": "npm run typecheck --workspaces",
     "clean": "npm run clean --workspaces && rm -rf node_modules"
+  },
+  "dependencies": {
+    "@midnight-ntwrk/compact-runtime": "^0.8.1"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
