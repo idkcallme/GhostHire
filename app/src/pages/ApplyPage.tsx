@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
 import { Eye, EyeOff, Shield, CheckCircle, XCircle, Loader2, ArrowRight } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -174,39 +173,72 @@ export function ApplyPage() {
           <div className="space-y-6">
             {/* Profile Selection */}
             <div className="card">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4" id="profile-selection-heading">
                 Select Your Profile
               </h2>
-              <div className="space-y-3">
+              <div 
+                className="space-y-3" 
+                role="radiogroup" 
+                aria-labelledby="profile-selection-heading"
+                aria-describedby="profile-selection-help"
+              >
+                <p id="profile-selection-help" className="sr-only">
+                  Choose a profile to apply with. Eligible profiles are marked with a checkmark.
+                </p>
                 {profiles.map((profile) => {
                   const isEligible = checkEligibility(profile)
+                  const profileId = `profile-${profile.id}`
                   return (
                     <div
                       key={profile.id}
-                      className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                      className={`p-4 border rounded-lg cursor-pointer transition-colors focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2 ${
                         selectedProfile?.id === profile.id
                           ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
                           : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                       }`}
                       onClick={() => setSelectedProfile(profile)}
                     >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="font-medium text-gray-900 dark:text-white">
-                            {profile.name}
-                          </h3>
-                          <p className="text-sm text-gray-600 dark:text-gray-300">
-                            {profile.region} • ${profile.expectedSalary.toLocaleString()}
-                          </p>
+                      <label 
+                        htmlFor={profileId}
+                        className="block cursor-pointer"
+                      >
+                        <input
+                          type="radio"
+                          id={profileId}
+                          name="profile-selection"
+                          value={profile.id}
+                          checked={selectedProfile?.id === profile.id}
+                          onChange={() => setSelectedProfile(profile)}
+                          className="sr-only"
+                          aria-describedby={`${profileId}-details`}
+                        />
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h3 className="font-medium text-gray-900 dark:text-white">
+                              {profile.name}
+                            </h3>
+                            <p 
+                              id={`${profileId}-details`}
+                              className="text-sm text-gray-600 dark:text-gray-300"
+                            >
+                              {profile.region} • ${profile.expectedSalary.toLocaleString()}
+                            </p>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            {isEligible ? (
+                              <CheckCircle 
+                                className="h-5 w-5 text-green-500" 
+                                aria-label="Eligible for this position"
+                              />
+                            ) : (
+                              <XCircle 
+                                className="h-5 w-5 text-red-500" 
+                                aria-label="Not eligible for this position"
+                              />
+                            )}
+                          </div>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          {isEligible ? (
-                            <CheckCircle className="h-5 w-5 text-green-500" />
-                          ) : (
-                            <XCircle className="h-5 w-5 text-red-500" />
-                          )}
-                        </div>
-                      </div>
+                      </label>
                     </div>
                   )
                 })}
@@ -216,26 +248,32 @@ export function ApplyPage() {
             {/* Proof Generation */}
             {selectedProfile && (
               <div className="card">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4" id="proof-generation-heading">
                   Generate Proof
                 </h2>
                 <Button
                   onClick={generateProof}
                   disabled={isGeneratingProof || !checkEligibility(selectedProfile)}
                   className="w-full"
+                  aria-describedby="proof-generation-help"
+                  aria-live="polite"
+                  aria-busy={isGeneratingProof}
                 >
                   {isGeneratingProof ? (
                     <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />
                       Generating Proof...
                     </>
                   ) : (
                     <>
-                      <Shield className="h-4 w-4 mr-2" />
+                      <Shield className="h-4 w-4 mr-2" aria-hidden="true" />
                       Generate ZK Proof
                     </>
                   )}
                 </Button>
+                <p id="proof-generation-help" className="text-sm text-gray-600 dark:text-gray-300 mt-2">
+                  Creates a zero-knowledge proof to verify your eligibility without revealing personal data.
+                </p>
               </div>
             )}
 
@@ -249,19 +287,25 @@ export function ApplyPage() {
                   onClick={submitApplication}
                   disabled={isSubmitting}
                   className="w-full"
+                  aria-describedby="submit-application-help"
+                  aria-live="polite"
+                  aria-busy={isSubmitting}
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />
                       Submitting...
                     </>
                   ) : (
                     <>
                       Submit Application
-                      <ArrowRight className="h-4 w-4 ml-2" />
+                      <ArrowRight className="h-4 w-4 ml-2" aria-hidden="true" />
                     </>
                   )}
                 </Button>
+                <p id="submit-application-help" className="text-sm text-gray-600 dark:text-gray-300 mt-2">
+                  Your proof will be submitted along with your application. Personal data remains private.
+                </p>
               </div>
             )}
           </div>
@@ -348,19 +392,26 @@ export function ApplyPage() {
                 size="sm"
                 onClick={() => setShowPrivateData(!showPrivateData)}
                 className="mt-4"
+                aria-pressed={showPrivateData}
+                aria-describedby="toggle-data-help"
+                role="switch"
+                aria-label={showPrivateData ? "Hide private data" : "Show private data for demonstration"}
               >
                 {showPrivateData ? (
                   <>
-                    <EyeOff className="h-4 w-4 mr-2" />
+                    <EyeOff className="h-4 w-4 mr-2" aria-hidden="true" />
                     Hide Private Data
                   </>
                 ) : (
                   <>
-                    <Eye className="h-4 w-4 mr-2" />
+                    <Eye className="h-4 w-4 mr-2" aria-hidden="true" />
                     Show Private Data (Demo)
                   </>
                 )}
               </Button>
+              <p id="toggle-data-help" className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Toggle to demonstrate how private data remains hidden in real applications.
+              </p>
             </div>
 
             {/* Proof Details */}

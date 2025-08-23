@@ -475,7 +475,9 @@ function FormField({
   multiline = false, 
   rows = 3, 
   required = false,
-  helper 
+  helper,
+  error,
+  id
 }: {
   label: string;
   value: string;
@@ -485,11 +487,19 @@ function FormField({
   rows?: number;
   required?: boolean;
   helper?: string;
+  error?: string;
+  id?: string;
 }) {
+  const fieldId = id || `field-${label.toLowerCase().replace(/\s+/g, '-')}`;
+  const helperId = helper ? `${fieldId}-helper` : undefined;
+  const errorId = error ? `${fieldId}-error` : undefined;
+  const ariaDescribedBy = [helperId, errorId].filter(Boolean).join(' ') || undefined;
+  const ariaInvalid = error ? "true" : "false";
+  
   const inputStyles = {
     width: "100%",
     padding: "0.75rem 1rem",
-    border: "1px solid var(--border)",
+    border: `1px solid ${error ? "var(--danger)" : "var(--border)"}`,
     borderRadius: "0.75rem",
     background: "rgba(248, 245, 242, 0.05)",
     color: "var(--warm-off-white)",
@@ -500,28 +510,72 @@ function FormField({
 
   return (
     <div className="space-y-2">
-      <label className="body-large font-medium">
-        {label} {required && <span style={{color: "var(--warning)"}}>*</span>}
+      <label 
+        htmlFor={fieldId}
+        className="body-large font-medium"
+      >
+        {label} {required && <span style={{color: "var(--warning)"}} aria-label="required">*</span>}
       </label>
       {multiline ? (
         <textarea
+          id={fieldId}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           rows={rows}
           style={inputStyles}
+          required={required}
+          aria-describedby={ariaDescribedBy}
+          aria-invalid={ariaInvalid}
+          onFocus={(e) => {
+            e.target.style.borderColor = "var(--primary)";
+            e.target.style.boxShadow = "0 0 0 3px rgba(91, 140, 255, 0.1)";
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = error ? "var(--danger)" : "var(--border)";
+            e.target.style.boxShadow = "none";
+          }}
         />
       ) : (
         <input
+          id={fieldId}
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           style={inputStyles}
+          required={required}
+          aria-describedby={ariaDescribedBy}
+          aria-invalid={ariaInvalid}
+          onFocus={(e) => {
+            e.target.style.borderColor = "var(--primary)";
+            e.target.style.boxShadow = "0 0 0 3px rgba(91, 140, 255, 0.1)";
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = error ? "var(--danger)" : "var(--border)";
+            e.target.style.boxShadow = "none";
+          }}
         />
       )}
-      {helper && (
-        <p className="body-small" style={{opacity: "0.6"}}>{helper}</p>
+      {error && (
+        <div 
+          id={errorId}
+          role="alert"
+          className="body-small"
+          style={{color: "var(--danger)"}}
+          aria-live="polite"
+        >
+          <span aria-hidden="true">⚠ </span>{error}
+        </div>
+      )}
+      {helper && !error && (
+        <p 
+          id={helperId}
+          className="body-small" 
+          style={{opacity: "0.6"}}
+        >
+          {helper}
+        </p>
       )}
     </div>
   );
@@ -531,38 +585,114 @@ function SliderField({
   label,
   value,
   onChange,
-  helper
+  helper,
+  id,
+  min = 0,
+  max = 100,
+  step = 1
 }: {
   label: string;
   value: number;
   onChange: (value: number) => void;
   helper?: string;
+  id?: string;
+  min?: number;
+  max?: number;
+  step?: number;
 }) {
+  const fieldId = id || `slider-${label.toLowerCase().replace(/\s+/g, '-')}`;
+  const helperId = helper ? `${fieldId}-helper` : undefined;
+  const ariaValueMin = min;
+  const ariaValueMax = max;
+  const ariaValueNow = value;
+  
   return (
     <div className="space-y-2">
       <div className="flex justify-between items-center">
-        <label className="body-large font-medium">{label}</label>
+        <label 
+          htmlFor={fieldId}
+          className="body-large font-medium"
+        >
+          {label}
+        </label>
         <span 
           className="px-2 py-1 rounded text-sm font-medium"
           style={{background: "var(--primary-muted)", color: "var(--primary)"}}
+          aria-label={`Current value: ${value} out of ${max}`}
         >
-          {value}/100
+          {value}/{max}
         </span>
       </div>
-              <input
-          type="range"
-          min={0}
-          max={100}
-          value={value}
-          onChange={(e) => onChange(parseInt(e.target.value))}
-          className="w-full h-2 rounded-lg appearance-none cursor-pointer"
-          aria-label={`${label} slider`}
-          style={{
-            background: `linear-gradient(to right, var(--primary) 0%, var(--primary) ${value}%, var(--border) ${value}%, var(--border) 100%)`
-          }}
-        />
+      <input
+        id={fieldId}
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(parseInt(e.target.value))}
+        className="w-full h-2 rounded-lg appearance-none cursor-pointer"
+        aria-describedby={helperId}
+        aria-valuemin={ariaValueMin}
+        aria-valuemax={ariaValueMax}
+        aria-valuenow={ariaValueNow}
+        aria-valuetext={`${value} out of ${max}`}
+        role="slider"
+        style={{
+          background: `linear-gradient(to right, var(--primary) 0%, var(--primary) ${value}%, var(--border) ${value}%, var(--border) 100%)`,
+          outline: "none"
+        }}
+        onFocus={(e) => {
+          e.target.style.outline = "2px solid var(--primary)";
+          e.target.style.outlineOffset = "2px";
+        }}
+        onBlur={(e) => {
+          e.target.style.outline = "none";
+        }}
+        onKeyDown={(e) => {
+          // Enhanced keyboard navigation for sliders
+          let newValue = value;
+          switch (e.key) {
+            case 'ArrowLeft':
+            case 'ArrowDown':
+              e.preventDefault();
+              newValue = Math.max(min, value - step);
+              break;
+            case 'ArrowRight':
+            case 'ArrowUp':
+              e.preventDefault();
+              newValue = Math.min(max, value + step);
+              break;
+            case 'Home':
+              e.preventDefault();
+              newValue = min;
+              break;
+            case 'End':
+              e.preventDefault();
+              newValue = max;
+              break;
+            case 'PageDown':
+              e.preventDefault();
+              newValue = Math.max(min, value - 10);
+              break;
+            case 'PageUp':
+              e.preventDefault();
+              newValue = Math.min(max, value + 10);
+              break;
+          }
+          if (newValue !== value) {
+            onChange(newValue);
+          }
+        }}
+      />
       {helper && (
-        <p className="body-small" style={{opacity: "0.6"}}>{helper}</p>
+        <p 
+          id={helperId}
+          className="body-small" 
+          style={{opacity: "0.6"}}
+        >
+          {helper}
+        </p>
       )}
     </div>
   );
@@ -573,19 +703,35 @@ function NumberField({
   value,
   onChange,
   placeholder,
-  prefix
+  prefix,
+  id,
+  min,
+  max,
+  step = 1,
+  required = false,
+  error
 }: {
   label: string;
   value: number;
   onChange: (value: number) => void;
   placeholder?: string;
   prefix?: string;
+  id?: string;
+  min?: number;
+  max?: number;
+  step?: number;
+  required?: boolean;
+  error?: string;
 }) {
+  const fieldId = id || `number-${label.toLowerCase().replace(/\s+/g, '-')}`;
+  const errorId = error ? `${fieldId}-error` : undefined;
+  const ariaInvalid = error ? "true" : "false";
+  
   const inputStyles = {
     width: "100%",
     padding: "0.75rem 1rem",
     paddingLeft: prefix ? "2.5rem" : "1rem",
-    border: "1px solid var(--border)",
+    border: `1px solid ${error ? "var(--danger)" : "var(--border)"}`,
     borderRadius: "0.75rem",
     background: "rgba(248, 245, 242, 0.05)",
     color: "var(--warm-off-white)",
@@ -596,24 +742,56 @@ function NumberField({
 
   return (
     <div className="space-y-2">
-      <label className="body-large font-medium">{label}</label>
+      <label 
+        htmlFor={fieldId}
+        className="body-large font-medium"
+      >
+        {label} {required && <span style={{color: "var(--warning)"}} aria-label="required">*</span>}
+      </label>
       <div className="relative">
         {prefix && (
           <div 
             className="absolute left-3 top-1/2 transform -translate-y-1/2 font-medium"
             style={{color: "var(--warm-off-white)", opacity: "0.7"}}
+            aria-hidden="true"
           >
             {prefix}
           </div>
         )}
         <input
+          id={fieldId}
           type="number"
           value={value}
           onChange={(e) => onChange(parseInt(e.target.value) || 0)}
           placeholder={placeholder}
           style={inputStyles}
+          min={min}
+          max={max}
+          step={step}
+          required={required}
+          aria-invalid={ariaInvalid}
+          aria-describedby={errorId}
+          onFocus={(e) => {
+            e.target.style.borderColor = "var(--primary)";
+            e.target.style.boxShadow = "0 0 0 3px rgba(91, 140, 255, 0.1)";
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = error ? "var(--danger)" : "var(--border)";
+            e.target.style.boxShadow = "none";
+          }}
         />
       </div>
+      {error && (
+        <div 
+          id={errorId}
+          role="alert"
+          className="body-small"
+          style={{color: "var(--danger)"}}
+          aria-live="polite"
+        >
+          <span aria-hidden="true">⚠ </span>{error}
+        </div>
+      )}
     </div>
   );
 }

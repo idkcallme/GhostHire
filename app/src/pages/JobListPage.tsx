@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, Filter, MapPin, DollarSign, Users, Calendar } from 'lucide-react'
+import { Search, MapPin, DollarSign, Users, Calendar } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 import { Button } from '@/components/ui/Button'
@@ -119,18 +119,26 @@ export function JobListPage() {
       </div>
 
       {/* Filters */}
-      <div className="card mb-8">
+      <div className="card mb-8" role="search" aria-label="Job search and filters">
         <div className="grid md:grid-cols-4 gap-4">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <label htmlFor="job-search" className="sr-only">
+              Search jobs by title or company
+            </label>
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" aria-hidden="true" />
             <input
+              id="job-search"
               type="text"
               placeholder="Search jobs..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+              aria-describedby="search-help"
             />
+            <p id="search-help" className="sr-only">
+              Search through job titles and company names
+            </p>
           </div>
 
           {/* Region Filter */}
@@ -185,6 +193,8 @@ export function JobListPage() {
                 setSelectedSkill('')
               }}
               className="w-full"
+              aria-label="Clear all search filters"
+              type="button"
             >
               Clear Filters
             </Button>
@@ -215,19 +225,22 @@ export function JobListPage() {
           </div>
         ) : (
           filteredJobs.map((job) => (
-            <div key={job.id} className="card hover:shadow-lg transition-shadow">
+            <article key={job.id} className="card hover:shadow-lg transition-shadow" aria-labelledby={`job-title-${job.id}`}>
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                 <div className="flex-1">
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">
+                      <h3 id={`job-title-${job.id}`} className="text-xl font-semibold text-gray-900 dark:text-white mb-1">
                         {job.title}
                       </h3>
                       <p className="text-gray-600 dark:text-gray-300 mb-2">
                         {job.company}
                       </p>
                     </div>
-                    <Link to={`/jobs/${job.id}/apply`}>
+                    <Link 
+                      to={`/jobs/${job.id}/apply`}
+                      aria-label={`Apply for ${job.title} at ${job.company}`}
+                    >
                       <Button>
                         Apply Now
                       </Button>
@@ -237,16 +250,18 @@ export function JobListPage() {
                   <div className="grid md:grid-cols-3 gap-4 mb-4">
                     {/* Salary Range */}
                     <div className="flex items-center text-gray-600 dark:text-gray-300">
-                      <DollarSign className="h-4 w-4 mr-2" />
-                      <span>
+                      <DollarSign className="h-4 w-4 mr-2" aria-hidden="true" />
+                      <span aria-label={`Salary range: ${job.salaryMin.toLocaleString()} to ${job.salaryMax.toLocaleString()} dollars`}>
                         ${job.salaryMin.toLocaleString()} - ${job.salaryMax.toLocaleString()}
                       </span>
                     </div>
 
                     {/* Regions */}
                     <div className="flex items-center text-gray-600 dark:text-gray-300">
-                      <MapPin className="h-4 w-4 mr-2" />
-                      <span>{job.allowedRegions.length} regions</span>
+                      <MapPin className="h-4 w-4 mr-2" aria-hidden="true" />
+                      <span aria-label={`Available in ${job.allowedRegions.length} regions`}>
+                        {job.allowedRegions.length} regions
+                      </span>
                     </div>
 
                     {/* Application Count */}
@@ -309,7 +324,7 @@ export function JobListPage() {
                   </Link>
                 </div>
               </div>
-            </div>
+            </article>
           ))
         )}
       </div>
